@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +16,10 @@ namespace ChuuongTrinhQuanLyKhachSan
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // Tu dong khoi tao Database va cac bang neu chua ton tai
+            function.InitializeDatabase();
+
             Application.Run(new Form1());
         }
     }
