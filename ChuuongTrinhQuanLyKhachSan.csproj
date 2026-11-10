@@ -56,6 +56,12 @@
     <Compile Include="All User Control\UC_AddRoom.Designer.cs">
       <DependentUpon>UC_AddRoom.cs</DependentUpon>
     </Compile>
+    <Compile Include="All User Control\UC_CustomerRes.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="All User Control\UC_CustomerRes.Designer.cs">
+      <DependentUpon>UC_CustomerRes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Dashbroad.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,6 +79,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="All User Control\UC_AddRoom.resx">
       <DependentUpon>UC_AddRoom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="All User Control\UC_CustomerRes.resx">
+      <DependentUpon>UC_CustomerRes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Dashbroad.resx">
       <DependentUpon>Dashbroad.cs</DependentUpon>

@@ -22,6 +22,12 @@ namespace ChuuongTrinhQuanLyKhachSan
             Application.Exit();
         }
 
+        private void Dashbroad_Load(object sender, EventArgs e)
+        {
+            uC_AddRoom1.Visible = false;
+            uC_CustomerRes1.Visible = false;
+            btnAddRoom.PerformClick();
+        }
         private void btnAddRoom_Click(object sender, EventArgs e)
         {
             panelMoving.Left = btnAddRoom.Left + 50;
@@ -30,10 +36,11 @@ namespace ChuuongTrinhQuanLyKhachSan
 
         }
 
-        private void Dashbroad_Load(object sender, EventArgs e)
+        private void btnCustomerRes_Click(object sender, EventArgs e)
         {
-            uC_AddRoom1.Visible = false;
-            btnAddRoom.PerformClick();
+            panelMoving.Left = btnCustomerRes.Left + 60;
+            uC_CustomerRes1.Visible = true;
+            uC_CustomerRes1.BringToFront();
         }
     }
 }
