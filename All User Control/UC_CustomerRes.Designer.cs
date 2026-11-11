@@ -32,7 +32,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtName = new Guna.UI2.WinForms.Guna2TextBox();
-            this.txtPhoneNo = new Guna.UI2.WinForms.Guna2TextBox();
+            this.txtContact = new Guna.UI2.WinForms.Guna2TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtNationality = new Guna.UI2.WinForms.Guna2TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -62,7 +62,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(24, 26);
+            this.label1.Location = new System.Drawing.Point(23, 26);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(392, 43);
             this.label1.TabIndex = 0;
@@ -99,26 +99,26 @@
             this.txtName.Style = Guna.UI2.WinForms.Enums.TextBoxStyle.Material;
             this.txtName.TabIndex = 2;
             // 
-            // txtPhoneNo
+            // txtContact
             // 
-            this.txtPhoneNo.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtPhoneNo.DefaultText = "";
-            this.txtPhoneNo.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
-            this.txtPhoneNo.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
-            this.txtPhoneNo.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txtPhoneNo.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txtPhoneNo.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtPhoneNo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtPhoneNo.ForeColor = System.Drawing.Color.Black;
-            this.txtPhoneNo.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtPhoneNo.Location = new System.Drawing.Point(77, 280);
-            this.txtPhoneNo.Name = "txtPhoneNo";
-            this.txtPhoneNo.PasswordChar = '\0';
-            this.txtPhoneNo.PlaceholderText = "Enter Phone Number";
-            this.txtPhoneNo.SelectedText = "";
-            this.txtPhoneNo.Size = new System.Drawing.Size(504, 72);
-            this.txtPhoneNo.Style = Guna.UI2.WinForms.Enums.TextBoxStyle.Material;
-            this.txtPhoneNo.TabIndex = 4;
+            this.txtContact.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtContact.DefaultText = "";
+            this.txtContact.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.txtContact.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.txtContact.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtContact.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtContact.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtContact.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtContact.ForeColor = System.Drawing.Color.Black;
+            this.txtContact.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtContact.Location = new System.Drawing.Point(77, 280);
+            this.txtContact.Name = "txtContact";
+            this.txtContact.PasswordChar = '\0';
+            this.txtContact.PlaceholderText = "Enter Phone Number";
+            this.txtContact.SelectedText = "";
+            this.txtContact.Size = new System.Drawing.Size(504, 72);
+            this.txtContact.Style = Guna.UI2.WinForms.Enums.TextBoxStyle.Material;
+            this.txtContact.TabIndex = 4;
             // 
             // label3
             // 
@@ -320,6 +320,7 @@
             this.txtBed.Size = new System.Drawing.Size(504, 36);
             this.txtBed.Style = Guna.UI2.WinForms.Enums.TextBoxStyle.Material;
             this.txtBed.TabIndex = 18;
+            this.txtBed.SelectedIndexChanged += new System.EventHandler(this.txtBed_SelectedIndexChanged);
             // 
             // label10
             // 
@@ -349,6 +350,7 @@
             this.txtRoom.Size = new System.Drawing.Size(504, 36);
             this.txtRoom.Style = Guna.UI2.WinForms.Enums.TextBoxStyle.Material;
             this.txtRoom.TabIndex = 20;
+            this.txtRoom.SelectedIndexChanged += new System.EventHandler(this.txtRoom_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -375,6 +377,7 @@
             this.txtRoomNo.Size = new System.Drawing.Size(504, 36);
             this.txtRoomNo.Style = Guna.UI2.WinForms.Enums.TextBoxStyle.Material;
             this.txtRoomNo.TabIndex = 22;
+            this.txtRoomNo.SelectedIndexChanged += new System.EventHandler(this.txtRoomNo_SelectedIndexChanged);
             // 
             // label12
             // 
@@ -437,6 +440,7 @@
             this.btnAlloteRoom.Size = new System.Drawing.Size(280, 94);
             this.btnAlloteRoom.TabIndex = 25;
             this.btnAlloteRoom.Text = "Thêm khách hàng";
+            this.btnAlloteRoom.Click += new System.EventHandler(this.btnAlloteRoom_Click);
             // 
             // guna2Elipse1
             // 
@@ -467,13 +471,15 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.txtNationality);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.txtPhoneNo);
+            this.Controls.Add(this.txtContact);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtName);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "UC_CustomerRes";
             this.Size = new System.Drawing.Size(1882, 852);
+            this.Load += new System.EventHandler(this.UC_CustomerRes_Load);
+            this.Leave += new System.EventHandler(this.UC_CustomerRes_Leave);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -484,7 +490,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private Guna.UI2.WinForms.Guna2TextBox txtName;
-        private Guna.UI2.WinForms.Guna2TextBox txtPhoneNo;
+        private Guna.UI2.WinForms.Guna2TextBox txtContact;
         private System.Windows.Forms.Label label3;
         private Guna.UI2.WinForms.Guna2TextBox txtNationality;
         private System.Windows.Forms.Label label4;
