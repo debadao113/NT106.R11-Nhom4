@@ -65,7 +65,26 @@ namespace ChuuongTrinhQuanLyKhachSan
                                 price BIGINT NOT NULL,
                                 booked VARCHAR(10) DEFAULT 'NO'
                             );
-                        END";
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'customer')
+                        BEGIN
+                            CREATE TABLE customer (
+                                cid INT IDENTITY(1,1) PRIMARY KEY,
+                                cname VARCHAR(250) NOT NULL,
+                                mobile BIGINT NOT NULL,
+                                nationality VARCHAR(250) NOT NULL,
+                                gender VARCHAR(50) NOT NULL,
+                                dob VARCHAR(50) NOT NULL,
+                                idproof VARCHAR(250) NOT NULL,
+                                address VARCHAR(350) NOT NULL,
+                                checkin VARCHAR(250) NOT NULL,
+                                checkout VARCHAR(250) DEFAULT 'NO',
+                                chekout VARCHAR(250) DEFAULT 'NO',
+                                roomid INT NOT NULL,
+                                FOREIGN KEY (roomid) REFERENCES rooms(roomid)
+                            );
+                        END;";
                     using (SqlCommand cmd = new SqlCommand(createTablesSql, dbConn))
                     {
                         cmd.ExecuteNonQuery();
