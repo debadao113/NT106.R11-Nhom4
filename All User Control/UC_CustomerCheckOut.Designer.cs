@@ -51,7 +51,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Century Gothic", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(20, 16);
+            this.label1.Location = new System.Drawing.Point(31, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(218, 43);
             this.label1.TabIndex = 1;
@@ -62,7 +62,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(584, 89);
+            this.label2.Location = new System.Drawing.Point(558, 53);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(103, 30);
             this.label2.TabIndex = 2;
@@ -80,7 +80,7 @@
             this.txtName.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtName.ForeColor = System.Drawing.Color.Black;
             this.txtName.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtName.Location = new System.Drawing.Point(589, 138);
+            this.txtName.Location = new System.Drawing.Point(563, 102);
             this.txtName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtName.Name = "txtName";
             this.txtName.PasswordChar = '\0';
@@ -89,6 +89,7 @@
             this.txtName.Size = new System.Drawing.Size(550, 77);
             this.txtName.Style = Guna.UI2.WinForms.Enums.TextBoxStyle.Material;
             this.txtName.TabIndex = 3;
+            this.txtName.TextChanged += new System.EventHandler(this.txtName_TextChanged);
             // 
             // guna2DataGridView1
             // 
@@ -103,7 +104,8 @@
             dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.guna2DataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
-            this.guna2DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.guna2DataGridView1.ColumnHeadersHeight = 4;
+            this.guna2DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle9.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -113,7 +115,7 @@
             dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.guna2DataGridView1.DefaultCellStyle = dataGridViewCellStyle9;
             this.guna2DataGridView1.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.guna2DataGridView1.Location = new System.Drawing.Point(39, 245);
+            this.guna2DataGridView1.Location = new System.Drawing.Point(39, 211);
             this.guna2DataGridView1.Name = "guna2DataGridView1";
             this.guna2DataGridView1.RowHeadersVisible = false;
             this.guna2DataGridView1.RowHeadersWidth = 62;
@@ -131,7 +133,7 @@
             this.guna2DataGridView1.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.guna2DataGridView1.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.guna2DataGridView1.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.guna2DataGridView1.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.guna2DataGridView1.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             this.guna2DataGridView1.ThemeStyle.HeaderStyle.Height = 4;
             this.guna2DataGridView1.ThemeStyle.ReadOnly = false;
             this.guna2DataGridView1.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
@@ -141,6 +143,7 @@
             this.guna2DataGridView1.ThemeStyle.RowsStyle.Height = 28;
             this.guna2DataGridView1.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.guna2DataGridView1.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.guna2DataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.guna2DataGridView1_CellContentClick);
             // 
             // txtCName
             // 
@@ -154,7 +157,7 @@
             this.txtCName.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.txtCName.ForeColor = System.Drawing.Color.Black;
             this.txtCName.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtCName.Location = new System.Drawing.Point(39, 701);
+            this.txtCName.Location = new System.Drawing.Point(39, 664);
             this.txtCName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtCName.Name = "txtCName";
             this.txtCName.PasswordChar = '\0';
@@ -170,7 +173,7 @@
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.Black;
-            this.label3.Location = new System.Drawing.Point(34, 652);
+            this.label3.Location = new System.Drawing.Point(34, 615);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(48, 30);
             this.label3.TabIndex = 5;
@@ -188,7 +191,7 @@
             this.txtRoom.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.txtRoom.ForeColor = System.Drawing.Color.Black;
             this.txtRoom.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtRoom.Location = new System.Drawing.Point(554, 701);
+            this.txtRoom.Location = new System.Drawing.Point(554, 664);
             this.txtRoom.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtRoom.Name = "txtRoom";
             this.txtRoom.PasswordChar = '\0';
@@ -204,7 +207,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.Black;
-            this.label4.Location = new System.Drawing.Point(549, 652);
+            this.label4.Location = new System.Drawing.Point(549, 615);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(102, 30);
             this.label4.TabIndex = 7;
@@ -215,7 +218,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.Black;
-            this.label5.Location = new System.Drawing.Point(1066, 652);
+            this.label5.Location = new System.Drawing.Point(1066, 615);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(175, 30);
             this.label5.TabIndex = 10;
@@ -226,7 +229,7 @@
             this.txtCheckOutDate.Checked = true;
             this.txtCheckOutDate.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCheckOutDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.txtCheckOutDate.Location = new System.Drawing.Point(1071, 701);
+            this.txtCheckOutDate.Location = new System.Drawing.Point(1071, 664);
             this.txtCheckOutDate.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
             this.txtCheckOutDate.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
             this.txtCheckOutDate.Name = "txtCheckOutDate";
@@ -249,11 +252,12 @@
             this.btnCheckOut.FillColor = System.Drawing.Color.White;
             this.btnCheckOut.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCheckOut.ForeColor = System.Drawing.Color.Black;
-            this.btnCheckOut.Location = new System.Drawing.Point(1501, 701);
+            this.btnCheckOut.Location = new System.Drawing.Point(1501, 664);
             this.btnCheckOut.Name = "btnCheckOut";
             this.btnCheckOut.Size = new System.Drawing.Size(270, 77);
             this.btnCheckOut.TabIndex = 13;
             this.btnCheckOut.Text = "Thanh toán";
+            this.btnCheckOut.Click += new System.EventHandler(this.btnCheckOut_Click);
             // 
             // guna2Elipse1
             // 
@@ -277,6 +281,8 @@
             this.Controls.Add(this.label1);
             this.Name = "UC_CustomerCheckOut";
             this.Size = new System.Drawing.Size(1882, 852);
+            this.Load += new System.EventHandler(this.UC_CustomerCheckOut_Load);
+            this.Leave += new System.EventHandler(this.UC_CustomerCheckOut_Leave);
             ((System.ComponentModel.ISupportInitialize)(this.guna2DataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
