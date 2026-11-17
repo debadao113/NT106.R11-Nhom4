@@ -42,8 +42,10 @@
             this.panelMoving = new Guna.UI2.WinForms.Guna2Panel();
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2Elipse2 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
-            this.uC_AddRoom1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_AddRoom();
+            this.guna2Elipse3 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
+            this.uC_CustomerCheckOut1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerCheckOut();
             this.uC_CustomerRes1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerRes();
+            this.uC_AddRoom1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_AddRoom();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -145,6 +147,7 @@
             this.btnCheckOut.Size = new System.Drawing.Size(284, 116);
             this.btnCheckOut.TabIndex = 2;
             this.btnCheckOut.Text = "Thanh toán";
+            this.btnCheckOut.Click += new System.EventHandler(this.btnCheckOut_Click);
             // 
             // btnCustomerRes
             // 
@@ -185,6 +188,7 @@
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.uC_CustomerCheckOut1);
             this.panel2.Controls.Add(this.uC_CustomerRes1);
             this.panel2.Controls.Add(this.uC_AddRoom1);
             this.panel2.Location = new System.Drawing.Point(21, 269);
@@ -197,20 +201,24 @@
             this.panelMoving.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.panelMoving.Location = new System.Drawing.Point(78, 153);
             this.panelMoving.Name = "panelMoving";
-            this.panelMoving.Size = new System.Drawing.Size(300, 10);
+            this.panelMoving.Size = new System.Drawing.Size(284, 10);
             this.panelMoving.TabIndex = 5;
             // 
             // guna2Elipse2
             // 
             this.guna2Elipse2.TargetControl = this;
             // 
-            // uC_AddRoom1
+            // guna2Elipse3
             // 
-            this.uC_AddRoom1.BackColor = System.Drawing.Color.White;
-            this.uC_AddRoom1.Location = new System.Drawing.Point(-2, -2);
-            this.uC_AddRoom1.Name = "uC_AddRoom1";
-            this.uC_AddRoom1.Size = new System.Drawing.Size(1860, 796);
-            this.uC_AddRoom1.TabIndex = 0;
+            this.guna2Elipse3.TargetControl = this;
+            // 
+            // uC_CustomerCheckOut1
+            // 
+            this.uC_CustomerCheckOut1.BackColor = System.Drawing.Color.White;
+            this.uC_CustomerCheckOut1.Location = new System.Drawing.Point(-1, -1);
+            this.uC_CustomerCheckOut1.Name = "uC_CustomerCheckOut1";
+            this.uC_CustomerCheckOut1.Size = new System.Drawing.Size(1882, 852);
+            this.uC_CustomerCheckOut1.TabIndex = 6;
             // 
             // uC_CustomerRes1
             // 
@@ -219,6 +227,14 @@
             this.uC_CustomerRes1.Name = "uC_CustomerRes1";
             this.uC_CustomerRes1.Size = new System.Drawing.Size(1882, 852);
             this.uC_CustomerRes1.TabIndex = 1;
+            // 
+            // uC_AddRoom1
+            // 
+            this.uC_AddRoom1.BackColor = System.Drawing.Color.White;
+            this.uC_AddRoom1.Location = new System.Drawing.Point(-2, -2);
+            this.uC_AddRoom1.Name = "uC_AddRoom1";
+            this.uC_AddRoom1.Size = new System.Drawing.Size(1860, 796);
+            this.uC_AddRoom1.TabIndex = 0;
             // 
             // Dashbroad
             // 
@@ -259,5 +275,7 @@
         private All_User_Control.UC_AddRoom uC_AddRoom1;
         private Guna.UI2.WinForms.Guna2Elipse guna2Elipse2;
         private All_User_Control.UC_CustomerRes uC_CustomerRes1;
+        private Guna.UI2.WinForms.Guna2Elipse guna2Elipse3;
+        private All_User_Control.UC_CustomerCheckOut uC_CustomerCheckOut1;
     }
 }
