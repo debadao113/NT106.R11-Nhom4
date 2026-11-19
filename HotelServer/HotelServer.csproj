@@ -31,9 +31,15 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Compile Include="Program.cs" />
+    <Compile Include="TcpHotelServer.cs" />
+    <Compile Include="RoomRepository.cs" />
+    <Compile Include="..\Data\HotelDatabase.cs"><Link>Data\HotelDatabase.cs</Link></Compile>
+    <Compile Include="..\Networking\Room.cs"><Link>Networking\Room.cs</Link></Compile>
+    <Compile Include="..\Networking\JsonConnection.cs"><Link>Networking\JsonConnection.cs</Link></Compile>
     <Compile Include="ServerForm.cs"><SubType>Form</SubType></Compile>
     <None Include="App.config" />
   </ItemGroup>

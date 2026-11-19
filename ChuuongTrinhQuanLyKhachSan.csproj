@@ -48,6 +48,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="All User Control\UC_AddRoom.cs">
@@ -81,6 +82,13 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="function.cs" />
+    <Compile Include="Networking\JsonConnection.cs" />
+    <Compile Include="Networking\NetworkClient.cs" />
+    <Compile Include="Networking\HotelConnection.cs" />
+    <Compile Include="Networking\Room.cs" />
+    <Compile Include="Networking\RoomService.cs" />
+    <Compile Include="Data\HotelDatabase.cs" />
+    <Compile Include="ServerConnectionForm.cs"><SubType>Form</SubType></Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="All User Control\UC_AddRoom.resx">
