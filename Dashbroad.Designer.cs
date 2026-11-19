@@ -247,11 +247,11 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnMinisize);
             this.Controls.Add(this.btnExit);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
             this.Name = "Dashbroad";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dashbroad";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.WindowState = System.Windows.Forms.FormWindowState.Normal;
             this.Load += new System.EventHandler(this.Dashbroad_Load);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);

@@ -47,6 +47,10 @@ Log chỉ ghi kết quả xử lý, tránh ghi nội dung dữ liệu của yêu
 
 ### Kết nối từ WinForms
 
+Màn hình đăng nhập và dashboard hỗ trợ kéo đổi kích thước, thu nhỏ và phóng to bằng
+thanh tiêu đề Windows. Thanh chức năng dashboard tự xuống dòng khi cửa sổ hẹp.
+Vùng nghiệp vụ có thanh cuộn để truy cập đầy đủ các trường khi mở nhiều cửa sổ cạnh nhau.
+
 Trong dashboard, nhấn **Kết nối server** rồi **Kết nối / PING** để thử kết nối.
 Chỉnh `HotelServerHost` và `HotelServerPort` trong `App.config` của ứng dụng khách.
 NetworkClient dùng chung một kết nối, ghép phản hồi bằng `requestId`, giới hạn kết nối

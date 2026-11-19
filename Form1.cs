@@ -15,6 +15,20 @@ namespace ChuuongTrinhQuanLyKhachSan
         public Form1()
         {
             InitializeComponent();
+            Text = "Đăng nhập - Quản lý khách sạn";
+            MinimumSize = new Size(640, 480);
+            ClientSize = new Size(guna2Panel1.Width + 48, guna2Panel1.Height + 48);
+            AutoScroll = true;
+            Resize += delegate { CenterLoginPanel(); };
+            CenterLoginPanel();
+        }
+
+        private void CenterLoginPanel()
+        {
+            AutoScrollPosition = Point.Empty;
+            guna2Panel1.Location = new Point(
+                Math.Max(20, (ClientSize.Width - guna2Panel1.Width) / 2),
+                Math.Max(20, (ClientSize.Height - guna2Panel1.Height) / 2));
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -28,6 +42,7 @@ namespace ChuuongTrinhQuanLyKhachSan
             {
                 labelError.Visible = false;
                 Dashbroad ds = new Dashbroad();
+                ds.FormClosed += delegate { Close(); };
                 this.Hide();
                 ds.Show();
             }
