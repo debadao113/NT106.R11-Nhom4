@@ -44,3 +44,19 @@ BEGIN
     );
 END
 GO
+
+-- Tai khoan le tan. Tao tai khoan bang cua so HotelServer de bam mat khau.
+IF OBJECT_ID('dbo.staff_accounts', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.staff_accounts (
+        accountId INT IDENTITY(1,1) PRIMARY KEY,
+        username NVARCHAR(50) NOT NULL UNIQUE,
+        displayName NVARCHAR(100) NOT NULL,
+        passwordHash VARBINARY(32) NOT NULL,
+        passwordSalt VARBINARY(16) NOT NULL,
+        passwordIterations INT NOT NULL,
+        isActive BIT NOT NULL DEFAULT 1,
+        createdAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+    );
+END
+GO

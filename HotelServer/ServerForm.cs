@@ -73,10 +73,17 @@ namespace HotelServer
             var actions = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill };
             actions.Controls.Add(startButton);
             actions.Controls.Add(stopButton);
+            var accountButton = new Button { Text = "Tài khoản lễ tân", AutoSize = true };
+            accountButton.Click += delegate
+            {
+                using (var dialog = new StaffAccountsForm()) dialog.ShowDialog(this);
+            };
+            actions.Controls.Add(accountButton);
             AddWide(layout, actions, 4);
             AddWide(layout, CreateLabel("Client đang kết nối"), 5);
             clientList = new ListView { Name = "ConnectedClients", View = View.Details, FullRowSelect = true, Dock = DockStyle.Fill };
             clientList.Columns.Add("Mã kết nối", 260);
+            clientList.Columns.Add("Tài khoản", 140);
             clientList.Columns.Add("Địa chỉ", 220);
             clientList.Columns.Add("Thời điểm", 180);
             AddWide(layout, clientList, 6);
@@ -119,7 +126,7 @@ namespace HotelServer
             clientList.BeginUpdate();
             clientList.Items.Clear();
             foreach (var client in server.GetClients())
-                clientList.Items.Add(new ListViewItem(new[] { client.Id, client.Endpoint, client.ConnectedAt.ToString("HH:mm:ss dd/MM") }));
+                clientList.Items.Add(new ListViewItem(new[] { client.Id, client.Username ?? "Chưa đăng nhập", client.Endpoint, client.ConnectedAt.ToString("HH:mm:ss dd/MM") }));
             clientList.EndUpdate();
             string message;
             while (pendingLogs.TryDequeue(out message))

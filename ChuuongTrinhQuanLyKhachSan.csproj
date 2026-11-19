@@ -86,6 +86,7 @@
     <Compile Include="Networking\NetworkClient.cs" />
     <Compile Include="Networking\HotelConnection.cs" />
     <Compile Include="Networking\Room.cs" />
+    <Compile Include="Networking\StaffAccount.cs" />
     <Compile Include="Networking\RoomService.cs" />
     <Compile Include="Data\HotelDatabase.cs" />
     <Compile Include="ServerConnectionForm.cs"><SubType>Form</SubType></Compile>
