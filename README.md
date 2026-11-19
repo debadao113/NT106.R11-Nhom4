@@ -61,5 +61,10 @@ của HotelServer nằm trong `HotelServer/App.config`. Khi nhận yêu cầu d�
 server tạo database và các bảng còn thiếu, dùng chung mã khởi tạo với ứng dụng cũ.
 Lỗi truy cập SQL được trả bằng `DATABASE_UNAVAILABLE`.
 
+`ADD_ROOM` nhận `data` gồm `roomNo`, `roomType`, `bed`, `price`. Server kiểm tra
+độ dài tương ứng 50/100/50 ký tự, các trường có nội dung và giá là số nguyên không âm.
+Lưu bằng SQL có tham số. Trùng số phòng trả `ROOM_EXISTS`, dữ liệu sai trả
+`VALIDATION_ERROR`. Màn hình Thêm phòng gửi thao tác lưu qua server và tải lại danh sách.
+
 Các màn hình đăng ký khách và trả phòng hiện vẫn dùng kết nối SQL trong `App.config`
 của ứng dụng WinForms. Trong giai đoạn tích hợp, cấu hình hai ứng dụng trỏ cùng database.

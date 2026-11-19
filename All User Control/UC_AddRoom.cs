@@ -12,8 +12,6 @@ namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
         private readonly Button refreshButton;
         private bool loading;
         private bool reloadRequested;
-        function fn = new function();
-        string query;
 
         public UC_AddRoom()
         {
@@ -61,22 +59,31 @@ namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
             await LoadRoomsAsync();
         }
 
-        private void btnAddRoom_Click(object sender, EventArgs e)
+        private async void btnAddRoom_Click(object sender, EventArgs e)
         {
-            if (txtRoomNo.Text != "" && txtRoomType.Text != "" && txtBed.Text != "" && txtPrice.Text != "")
+            long price;
+            if (string.IsNullOrWhiteSpace(txtRoomNo.Text) || string.IsNullOrWhiteSpace(txtRoomType.Text)
+                || string.IsNullOrWhiteSpace(txtBed.Text) || !long.TryParse(txtPrice.Text, out price) || price < 0)
             {
-                string roomno = txtRoomNo.Text;
-                string type = txtRoomType.Text;
-                string bed = txtBed.Text;
-                Int64 price = Int64.Parse(txtPrice.Text);
-                query = "insert into rooms (roomNo, roomType, bed, price) values ('" + roomno + "','" + type + "','" + bed + "','" + price + "')";
-                fn.setData(query, "Đã thêm phòng");
-                UC_AddRoom_Load(this, null);
-                clearAll();
+                connectionStatus.Text = "Điền đầy đủ thông tin phòng và giá là số nguyên không âm.";
+                return;
             }
-            else
+            var room = new Room { roomNo = txtRoomNo.Text, roomType = txtRoomType.Text, bed = txtBed.Text, price = price };
+            btnAddRoom.Enabled = false;
+            try
             {
-                MessageBox.Show("Xin vui lòng điền đầy đủ thông tin", "Warning !", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                await RoomService.AddRoomAsync(room);
+                if (IsDisposed) return;
+                clearAll();
+                await LoadRoomsAsync();
+            }
+            catch (Exception ex)
+            {
+                if (!IsDisposed) connectionStatus.Text = "Thêm phòng thất bại: " + ex.Message;
+            }
+            finally
+            {
+                if (!IsDisposed) btnAddRoom.Enabled = true;
             }
         }
 

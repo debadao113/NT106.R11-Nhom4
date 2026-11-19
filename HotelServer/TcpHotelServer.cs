@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HotelNetworking;
 using HotelData;
 using System.Data.SqlClient;
+using System.Collections.Generic;
 
 namespace HotelServer
 {
@@ -193,8 +194,33 @@ namespace HotelServer
                     return NetworkMessage.Response(request, new { serverTimeUtc = DateTime.UtcNow.ToString("O") });
                 case "GET_ROOMS":
                     return NetworkMessage.Response(request, await rooms.GetRoomsAsync().ConfigureAwait(false));
+                case "ADD_ROOM":
+                    return await AddRoomAsync(request).ConfigureAwait(false);
                 default:
                     return NetworkMessage.Failure(request, "UNKNOWN_ACTION", "Lệnh chưa được hỗ trợ.");
+            }
+        }
+
+        private async Task<NetworkMessage> AddRoomAsync(NetworkMessage request)
+        {
+            var data = request.data as Dictionary<string, object>;
+            object roomNo, roomType, bed, price;
+            if (data == null || !data.TryGetValue("roomNo", out roomNo) || !data.TryGetValue("roomType", out roomType)
+                || !data.TryGetValue("bed", out bed) || !data.TryGetValue("price", out price)
+                || !(roomNo is string) || !(roomType is string) || !(bed is string) || !(price is int || price is long))
+                return NetworkMessage.Failure(request, "VALIDATION_ERROR", "Cần số phòng, loại phòng, loại giường và giá là số nguyên.");
+            var room = new Room
+            {
+                roomNo = ((string)roomNo).Trim(), roomType = ((string)roomType).Trim(),
+                bed = ((string)bed).Trim(), price = Convert.ToInt64(price)
+            };
+            if (room.roomNo.Length == 0 || room.roomNo.Length > 50 || room.roomType.Length == 0 || room.roomType.Length > 100
+                || room.bed.Length == 0 || room.bed.Length > 50 || room.price < 0)
+                return NetworkMessage.Failure(request, "VALIDATION_ERROR", "Số phòng tối đa 50 ký tự, loại phòng 100, loại giường 50. Các trường phải có nội dung và giá phải không âm.");
+            try { return NetworkMessage.Response(request, await rooms.AddRoomAsync(room).ConfigureAwait(false)); }
+            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+            {
+                return NetworkMessage.Failure(request, "ROOM_EXISTS", "Số phòng đã tồn tại. Hãy tải lại danh sách phòng.");
             }
         }
 

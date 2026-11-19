@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using HotelData;
@@ -38,14 +39,43 @@ namespace HotelServer
                 using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
                     while (await reader.ReadAsync().ConfigureAwait(false))
-                        rooms.Add(new Room
-                        {
-                            roomid = reader.GetInt32(0), roomNo = reader.GetString(1), roomType = reader.GetString(2),
-                            bed = reader.GetString(3), price = reader.GetInt64(4), booked = reader.IsDBNull(5) ? null : reader.GetString(5)
-                        });
+                        rooms.Add(ReadRoom(reader));
                 }
             }
             return rooms;
+        }
+
+        public async Task<Room> AddRoomAsync(Room room)
+        {
+            await EnsureInitializedAsync().ConfigureAwait(false);
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync().ConfigureAwait(false);
+                const string sql = @"INSERT INTO dbo.rooms (roomNo, roomType, bed, price)
+OUTPUT INSERTED.roomid, INSERTED.roomNo, INSERTED.roomType, INSERTED.bed, INSERTED.price, INSERTED.booked
+VALUES (@roomNo, @roomType, @bed, @price)";
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.Add("@roomNo", SqlDbType.VarChar, 50).Value = room.roomNo;
+                    command.Parameters.Add("@roomType", SqlDbType.VarChar, 100).Value = room.roomType;
+                    command.Parameters.Add("@bed", SqlDbType.VarChar, 50).Value = room.bed;
+                    command.Parameters.Add("@price", SqlDbType.BigInt).Value = room.price;
+                    using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        await reader.ReadAsync().ConfigureAwait(false);
+                        return ReadRoom(reader);
+                    }
+                }
+            }
+        }
+
+        private static Room ReadRoom(SqlDataReader reader)
+        {
+            return new Room
+            {
+                roomid = reader.GetInt32(0), roomNo = reader.GetString(1), roomType = reader.GetString(2),
+                bed = reader.GetString(3), price = reader.GetInt64(4), booked = reader.IsDBNull(5) ? null : reader.GetString(5)
+            };
         }
     }
 }

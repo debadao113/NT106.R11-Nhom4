@@ -14,5 +14,13 @@ namespace HotelNetworking
             if (response.success != true) throw new IOException(response.error?.message ?? "Không thể tải danh sách phòng.");
             return new JavaScriptSerializer().ConvertToType<List<Room>>(response.data);
         }
+
+        public static async Task<Room> AddRoomAsync(Room room)
+        {
+            await HotelConnection.ConnectAsync().ConfigureAwait(false);
+            var response = await HotelConnection.Client.SendAsync("ADD_ROOM", room).ConfigureAwait(false);
+            if (response.success != true) throw new IOException(response.error?.message ?? "Không thể thêm phòng.");
+            return new JavaScriptSerializer().ConvertToType<Room>(response.data);
+        }
     }
 }
