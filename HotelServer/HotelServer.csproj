@@ -35,6 +35,7 @@
     <Reference Include="System.Windows.Forms" />
     <Compile Include="Program.cs" />
     <Compile Include="TcpHotelServer.cs" />
+    <Compile Include="..\Networking\JsonConnection.cs"><Link>Networking\JsonConnection.cs</Link></Compile>
     <Compile Include="ServerForm.cs"><SubType>Form</SubType></Compile>
     <None Include="App.config" />
   </ItemGroup>

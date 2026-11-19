@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using HotelNetworking;
 
 namespace HotelServer
 {
@@ -127,11 +128,21 @@ namespace HotelServer
         {
             try
             {
-                var buffer = new byte[4096];
-                var stream = connection.Socket.GetStream();
-                while (await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false) != 0)
+                var channel = new JsonConnection(connection.Socket.GetStream());
+                while (true)
                 {
-                    Log("Nhận dữ liệu từ " + connection.Info.Endpoint);
+                    NetworkMessage request;
+                    try { request = await channel.ReadAsync().ConfigureAwait(false); }
+                    catch (ProtocolException ex)
+                    {
+                        await channel.WriteAsync(NetworkMessage.Failure(null, "INVALID_REQUEST", ex.Message)).ConfigureAwait(false);
+                        if (ex.CloseConnection) break;
+                        continue;
+                    }
+                    if (request == null) break;
+                    var response = HandleRequest(request, connection.Info.Id);
+                    await channel.WriteAsync(response).ConfigureAwait(false);
+                    Log("Đã xử lý yêu cầu từ " + connection.Info.Endpoint + (response.success == true ? "." : " (lỗi " + response.error.code + ")."));
                 }
             }
             catch (IOException) { }
@@ -144,6 +155,22 @@ namespace HotelServer
                 clients.TryRemove(connection.Info.Id, out removed);
                 Log("Client ngắt kết nối: " + connection.Info.Endpoint);
                 connection.Completion.TrySetResult(true);
+            }
+        }
+
+        private NetworkMessage HandleRequest(NetworkMessage request, string connectionId)
+        {
+            if (request.type != "request" || string.IsNullOrWhiteSpace(request.requestId) || request.requestId.Length > 100
+                || string.IsNullOrWhiteSpace(request.action) || request.action.Length > 64)
+                return NetworkMessage.Failure(null, "INVALID_REQUEST", "Cần type=request, requestId tối đa 100 ký tự và action tối đa 64 ký tự.");
+            switch (request.action)
+            {
+                case "HELLO":
+                    return NetworkMessage.Response(request, new { connectionId, protocolVersion = 1 });
+                case "PING":
+                    return NetworkMessage.Response(request, new { serverTimeUtc = DateTime.UtcNow.ToString("O") });
+                default:
+                    return NetworkMessage.Failure(request, "UNKNOWN_ACTION", "Lệnh chưa được hỗ trợ.");
             }
         }
 
