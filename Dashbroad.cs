@@ -15,22 +15,61 @@ namespace ChuuongTrinhQuanLyKhachSan
         public Dashbroad()
         {
             InitializeComponent();
+            guna2Elipse1.Dispose();
+            guna2Elipse2.Dispose();
+            guna2Elipse3.Dispose();
+            Region = null;
+            SuspendLayout();
+            Text = "Lễ tân - Quản lý khách sạn";
+            MinimumSize = new Size(640, 480);
+            ClientSize = new Size(1100, 720);
+            btnExit.Visible = false;
+            btnMinisize.Visible = false;
+            panelMoving.Visible = false;
+
+            var navigation = new FlowLayoutPanel
+            {
+                Name = "Navigation", Dock = DockStyle.Top, AutoSize = true,
+                WrapContents = true, Padding = new Padding(8)
+            };
+            foreach (var button in new[] { btnAddRoom, btnCustomerRes, btnCheckOut, btnCustomerDetail, btnEmployee })
+            {
+                button.Size = new Size(170, 54);
+                button.Margin = new Padding(4);
+                navigation.Controls.Add(button);
+            }
+            Controls.Remove(panel1);
+            panel1.Dispose();
+            Controls.Add(navigation);
+            panel2.Dock = DockStyle.Fill;
+            panel2.AutoScroll = true;
+            foreach (Control page in panel2.Controls)
+            {
+                page.Location = Point.Empty;
+                page.Visible = false;
+            }
+
             var connectionButton = new Button
             {
-                Text = "Kết nối server", AutoSize = true,
-                Location = new Point(20, ClientSize.Height - 50), Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+                Name = "ServerConnection", Text = "Kết nối server", AutoSize = true
             };
             connectionButton.Click += delegate
             {
                 using (var dialog = new ServerConnectionForm()) dialog.ShowDialog(this);
             };
-            Controls.Add(connectionButton);
-            connectionButton.BringToFront();
+            var footer = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Bottom, AutoSize = true, Padding = new Padding(8)
+            };
+            footer.Controls.Add(connectionButton);
+            Controls.Add(footer);
+            Controls.SetChildIndex(panel2, 0);
+            ResumeLayout(true);
         }
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            Close();
         }
 
         private void Dashbroad_Load(object sender, EventArgs e)
@@ -42,24 +81,29 @@ namespace ChuuongTrinhQuanLyKhachSan
         }
         private void btnAddRoom_Click(object sender, EventArgs e)
         {
-            panelMoving.Left = btnAddRoom.Left + 50;
-            uC_AddRoom1.Visible = true;
-            uC_AddRoom1.BringToFront();
+            ShowPage(uC_AddRoom1);
 
         }
 
         private void btnCustomerRes_Click(object sender, EventArgs e)
         {
-            panelMoving.Left = btnCustomerRes.Left + 60;
-            uC_CustomerRes1.Visible = true;
-            uC_CustomerRes1.BringToFront();
+            ShowPage(uC_CustomerRes1);
         }
 
         private void btnCheckOut_Click(object sender, EventArgs e)
         {
-            panelMoving.Left = btnCheckOut.Left + 60; // Di chuyển thanh trượt chỉ mục
-            uC_CustomerCheckOut1.Visible = true;
-            uC_CustomerCheckOut1.BringToFront(); // Đưa giao diện thanh toán lên trên cùng
+            ShowPage(uC_CustomerCheckOut1);
+        }
+
+        private void ShowPage(Control selectedPage)
+        {
+            panel2.SuspendLayout();
+            panel2.AutoScrollPosition = Point.Empty;
+            foreach (Control page in panel2.Controls) page.Visible = page == selectedPage;
+            selectedPage.Location = Point.Empty;
+            panel2.AutoScrollMinSize = selectedPage.Size;
+            selectedPage.BringToFront();
+            panel2.ResumeLayout(true);
         }
     }
 }
