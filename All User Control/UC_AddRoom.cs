@@ -33,12 +33,12 @@ namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
             Controls.Add(refreshButton);
             Controls.Add(connectionStatus);
             HotelConnection.Client.EventReceived += OnServerEvent;
-            HotelConnection.Client.Connected += OnConnected;
+            HotelConnection.Authenticated += OnConnected;
             HotelConnection.Client.Disconnected += OnDisconnected;
             Disposed += delegate
             {
                 HotelConnection.Client.EventReceived -= OnServerEvent;
-                HotelConnection.Client.Connected -= OnConnected;
+                HotelConnection.Authenticated -= OnConnected;
                 HotelConnection.Client.Disconnected -= OnDisconnected;
             };
         }

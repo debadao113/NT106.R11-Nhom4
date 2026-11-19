@@ -17,6 +17,7 @@ namespace HotelServer
         public string Id { get; set; }
         public string Endpoint { get; set; }
         public DateTime ConnectedAt { get; set; }
+        public string Username { get; set; }
     }
 
     public sealed class TcpHotelServer
@@ -26,6 +27,8 @@ namespace HotelServer
             public TcpClient Socket;
             public ClientInfo Info;
             public JsonConnection Channel;
+            public StaffAccount Account;
+            public int FailedLogins;
             public readonly TaskCompletionSource<bool> Completion =
                 new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
@@ -36,11 +39,13 @@ namespace HotelServer
         private Task acceptTask = Task.CompletedTask;
         private Task stopTask = Task.CompletedTask;
         private readonly RoomRepository rooms;
+        private readonly StaffAccountRepository accounts;
         public event Action<string> Logged;
 
         public TcpHotelServer(string connectionString = null)
         {
             rooms = new RoomRepository(connectionString ?? HotelDatabase.GetConnectionString());
+            accounts = new StaffAccountRepository(connectionString);
         }
 
         public bool IsRunning { get { lock (lifecycle) { return listener != null; } } }
@@ -152,7 +157,7 @@ namespace HotelServer
                     }
                     if (request == null) break;
                     NetworkMessage response;
-                    try { response = await HandleRequestAsync(request, connection.Info.Id).ConfigureAwait(false); }
+                    try { response = await HandleRequestAsync(request, connection).ConfigureAwait(false); }
                     catch (SqlException ex)
                     {
                         Log("Lỗi SQL Server " + ex.Number + ". Kiểm tra kết nối và quyền truy cập CSDL.");
@@ -168,6 +173,7 @@ namespace HotelServer
                     }
                     await channel.WriteAsync(response).ConfigureAwait(false);
                     Log("Đã xử lý yêu cầu từ " + connection.Info.Endpoint + (response.success == true ? "." : " (lỗi " + response.error.code + ")."));
+                    if (connection.FailedLogins >= 5) break;
                 }
             }
             catch (IOException) { }
@@ -183,7 +189,7 @@ namespace HotelServer
             }
         }
 
-        private async Task<NetworkMessage> HandleRequestAsync(NetworkMessage request, string connectionId)
+        private async Task<NetworkMessage> HandleRequestAsync(NetworkMessage request, Connection connection)
         {
             if (request.type != "request" || string.IsNullOrWhiteSpace(request.requestId) || request.requestId.Length > 100
                 || string.IsNullOrWhiteSpace(request.action) || request.action.Length > 64)
@@ -191,16 +197,42 @@ namespace HotelServer
             switch (request.action)
             {
                 case "HELLO":
-                    return NetworkMessage.Response(request, new { connectionId, protocolVersion = 1 });
+                    return NetworkMessage.Response(request, new { connectionId = connection.Info.Id, protocolVersion = 1 });
                 case "PING":
                     return NetworkMessage.Response(request, new { serverTimeUtc = DateTime.UtcNow.ToString("O") });
                 case "GET_ROOMS":
+                    if (connection.Account == null) return AuthenticationRequired(request);
                     return NetworkMessage.Response(request, await rooms.GetRoomsAsync().ConfigureAwait(false));
                 case "ADD_ROOM":
+                    if (connection.Account == null) return AuthenticationRequired(request);
                     return await AddRoomAsync(request).ConfigureAwait(false);
+                case "LOGIN":
+                    connection.Account = null;
+                    connection.Info.Username = null;
+                    var data = request.data as Dictionary<string, object>;
+                    object username, password;
+                    if (data == null || !data.TryGetValue("username", out username) || !data.TryGetValue("password", out password)
+                        || !(username is string) || !(password is string))
+                        return NetworkMessage.Failure(request, "VALIDATION_ERROR", "Cần tên đăng nhập và mật khẩu.");
+                    var account = await accounts.AuthenticateAsync((string)username, (string)password).ConfigureAwait(false);
+                    if (account == null)
+                    {
+                        connection.FailedLogins++;
+                        await Task.Delay(500).ConfigureAwait(false);
+                        return NetworkMessage.Failure(request, "INVALID_CREDENTIALS", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                    }
+                    connection.Account = account;
+                    connection.Info.Username = account.username;
+                    connection.FailedLogins = 0;
+                    return NetworkMessage.Response(request, account);
                 default:
                     return NetworkMessage.Failure(request, "UNKNOWN_ACTION", "Lệnh chưa được hỗ trợ.");
             }
+        }
+
+        private static NetworkMessage AuthenticationRequired(NetworkMessage request)
+        {
+            return NetworkMessage.Failure(request, "AUTH_REQUIRED", "Vui lòng đăng nhập tài khoản lễ tân.");
         }
 
         private async Task<NetworkMessage> AddRoomAsync(NetworkMessage request)
@@ -223,7 +255,7 @@ namespace HotelServer
             {
                 var saved = await rooms.AddRoomAsync(room).ConfigureAwait(false);
                 var changed = new NetworkMessage { type = "event", action = "ROOMS_CHANGED", data = new { roomId = saved.roomid } };
-                await Task.WhenAll(clients.Values.Select(client => SendEventAsync(client, changed))).ConfigureAwait(false);
+                await Task.WhenAll(clients.Values.Where(client => client.Account != null).Select(client => SendEventAsync(client, changed))).ConfigureAwait(false);
                 return NetworkMessage.Response(request, saved);
             }
             catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)

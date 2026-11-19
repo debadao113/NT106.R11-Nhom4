@@ -68,6 +68,19 @@ BEGIN
         roomid INT NOT NULL REFERENCES dbo.rooms(roomid)
     );
 END;
+IF OBJECT_ID('dbo.staff_accounts', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.staff_accounts (
+        accountId INT IDENTITY(1,1) PRIMARY KEY,
+        username NVARCHAR(50) NOT NULL UNIQUE,
+        displayName NVARCHAR(100) NOT NULL,
+        passwordHash VARBINARY(32) NOT NULL,
+        passwordSalt VARBINARY(16) NOT NULL,
+        passwordIterations INT NOT NULL,
+        isActive BIT NOT NULL DEFAULT 1,
+        createdAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+    );
+END;
 COMMIT TRANSACTION;";
                 using (var command = new SqlCommand(sql, connection))
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);

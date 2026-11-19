@@ -54,7 +54,8 @@ Vùng nghiệp vụ có thanh cuộn để truy cập đầy đủ các trườn
 Trong dashboard, nhấn **Kết nối server** rồi **Kết nối / PING** để thử kết nối.
 Chỉnh `HotelServerHost` và `HotelServerPort` trong `App.config` của ứng dụng khách.
 NetworkClient dùng chung một kết nối, ghép phản hồi bằng `requestId`, giới hạn kết nối
-5 giây và yêu cầu 10 giây. Sau khi mất kết nối hoặc timeout, dùng nút kết nối để thử lại.
+5 giây và yêu cầu 10 giây. Sau khi mất kết nối hoặc timeout, nhập lại tài khoản và
+mật khẩu trong cửa sổ **Kết nối server**, nhấn **Đăng nhập lại** để tiếp tục.
 Các thao tác ghi dữ liệu cần kiểm tra kết quả hiện có trước khi gửi lại sau timeout.
 
 ### Dữ liệu phòng qua server
@@ -78,10 +79,26 @@ của ứng dụng WinForms. Trong giai đoạn tích hợp, cấu hình hai ứ
 Sau khi `ADD_ROOM` lưu thành công, server phát gói `type=event`, `action=ROOMS_CHANGED`
 cho các client đang kết nối. Màn hình Thêm phòng tự tải danh sách mới, kể cả khi yêu cầu
 tải trước đó đang chạy. Khi mất kết nối, bảng được xóa để tránh dùng dữ liệu cũ. Khi
-kết nối lại qua nút **Tải lại phòng** hoặc cửa sổ kết nối, danh sách được lấy lại.
+kết nối và đăng nhập lại tại cửa sổ kết nối, danh sách được lấy lại.
 Để thử, chạy HotelServer và hai phiên ứng dụng, thêm phòng ở A rồi quan sát B cập nhật.
 
 Các thay đổi từ màn hình đăng ký khách, trả phòng hoặc thao tác SQL trực tiếp hiện cần
 nhấn **Tải lại phòng**. Các màn hình này sẽ được chuyển sang server ở phần tích hợp sau.
-TCP hiện dành cho môi trường LAN thử nghiệm. Xác thực tài khoản và phân quyền tại
-server thuộc mốc tiếp theo trong kế hoạch.
+TCP hiện dành cho môi trường LAN thử nghiệm, dữ liệu truyền qua TCP chưa có TLS.
+
+### Tài khoản lễ tân
+
+HotelServer có nút **Tài khoản lễ tân** để xem danh sách và tạo tài khoản trong SQL
+Server. Mật khẩu được lưu bằng PBKDF2-HMAC-SHA256 với salt ngẫu nhiên riêng từng tài
+khoản. Cửa sổ tạo tài khoản chỉ nằm trên ứng dụng server tại máy chủ.
+
+App WinForms gửi lệnh `LOGIN` với `data` gồm `username` và `password` để đăng nhập.
+Server xác thực từ bảng `staff_accounts`, gắn tài khoản vào kết nối hiện tại và trả
+thông tin tài khoản gồm mã, tên đăng nhập và tên hiển thị. `GET_ROOMS`, `ADD_ROOM` và
+thông báo `ROOMS_CHANGED` yêu cầu kết nối đã đăng nhập. Thiếu đăng nhập trả
+`AUTH_REQUIRED`, sai tài khoản hoặc mật khẩu trả `INVALID_CREDENTIALS`. Sau 5 lần
+đăng nhập sai trên một kết nối, server đóng kết nối đó. Kết nối lại cần xác thực lại.
+
+Danh sách client trên server hiển thị tên tài khoản để phân biệt các phiên lễ tân.
+Mỗi máy cài mới cần tạo tài khoản qua cửa sổ server sau khi cấu hình database.
+Các chức năng tài khoản khách, Google, OTP và phân quyền admin thuộc các mốc sau.

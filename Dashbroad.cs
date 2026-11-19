@@ -20,7 +20,7 @@ namespace ChuuongTrinhQuanLyKhachSan
             guna2Elipse3.Dispose();
             Region = null;
             SuspendLayout();
-            Text = "Lễ tân - Quản lý khách sạn";
+            UpdateAccountTitle();
             MinimumSize = new Size(640, 480);
             ClientSize = new Size(1100, 720);
             btnExit.Visible = false;
@@ -56,6 +56,7 @@ namespace ChuuongTrinhQuanLyKhachSan
             connectionButton.Click += delegate
             {
                 using (var dialog = new ServerConnectionForm()) dialog.ShowDialog(this);
+                UpdateAccountTitle();
             };
             var footer = new FlowLayoutPanel
             {
@@ -104,6 +105,13 @@ namespace ChuuongTrinhQuanLyKhachSan
             panel2.AutoScrollMinSize = selectedPage.Size;
             selectedPage.BringToFront();
             panel2.ResumeLayout(true);
+        }
+
+        private void UpdateAccountTitle()
+        {
+            Text = "Lễ tân - Quản lý khách sạn";
+            var account = HotelNetworking.HotelConnection.CurrentAccount;
+            if (account != null) Text += " - " + account.username;
         }
     }
 }

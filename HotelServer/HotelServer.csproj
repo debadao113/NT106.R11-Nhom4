@@ -37,6 +37,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="TcpHotelServer.cs" />
     <Compile Include="RoomRepository.cs" />
+    <Compile Include="StaffAccountRepository.cs" />
+    <Compile Include="StaffAccountsForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="..\Networking\StaffAccount.cs"><Link>Networking\StaffAccount.cs</Link></Compile>
     <Compile Include="..\Data\HotelDatabase.cs"><Link>Data\HotelDatabase.cs</Link></Compile>
     <Compile Include="..\Networking\Room.cs"><Link>Networking\Room.cs</Link></Compile>
     <Compile Include="..\Networking\JsonConnection.cs"><Link>Networking\JsonConnection.cs</Link></Compile>
