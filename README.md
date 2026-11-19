@@ -52,3 +52,14 @@ Chỉnh `HotelServerHost` và `HotelServerPort` trong `App.config` của ứng d
 NetworkClient dùng chung một kết nối, ghép phản hồi bằng `requestId`, giới hạn kết nối
 5 giây và yêu cầu 10 giây. Sau khi mất kết nối hoặc timeout, dùng nút kết nối để thử lại.
 Các thao tác ghi dữ liệu cần kiểm tra kết quả hiện có trước khi gửi lại sau timeout.
+
+### Dữ liệu phòng qua server
+
+`GET_ROOMS` trả danh sách phòng theo `roomid`. Màn hình Thêm phòng tự kết nối để tải
+danh sách và có nút **Tải lại phòng** nếu server chưa sẵn sàng. Cấu hình SQL Server
+của HotelServer nằm trong `HotelServer/App.config`. Khi nhận yêu cầu dữ liệu đầu tiên,
+server tạo database và các bảng còn thiếu, dùng chung mã khởi tạo với ứng dụng cũ.
+Lỗi truy cập SQL được trả bằng `DATABASE_UNAVAILABLE`.
+
+Các màn hình đăng ký khách và trả phòng hiện vẫn dùng kết nối SQL trong `App.config`
+của ứng dụng WinForms. Trong giai đoạn tích hợp, cấu hình hai ứng dụng trỏ cùng database.

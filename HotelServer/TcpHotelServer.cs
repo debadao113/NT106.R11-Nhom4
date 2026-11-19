@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using HotelNetworking;
+using HotelData;
+using System.Data.SqlClient;
 
 namespace HotelServer
 {
@@ -31,7 +33,13 @@ namespace HotelServer
         private TcpListener listener;
         private Task acceptTask = Task.CompletedTask;
         private Task stopTask = Task.CompletedTask;
+        private readonly RoomRepository rooms;
         public event Action<string> Logged;
+
+        public TcpHotelServer(string connectionString = null)
+        {
+            rooms = new RoomRepository(connectionString ?? HotelDatabase.GetConnectionString());
+        }
 
         public bool IsRunning { get { lock (lifecycle) { return listener != null; } } }
 
@@ -140,7 +148,21 @@ namespace HotelServer
                         continue;
                     }
                     if (request == null) break;
-                    var response = HandleRequest(request, connection.Info.Id);
+                    NetworkMessage response;
+                    try { response = await HandleRequestAsync(request, connection.Info.Id).ConfigureAwait(false); }
+                    catch (SqlException ex)
+                    {
+                        Log("Lỗi SQL Server " + ex.Number + ". Kiểm tra kết nối và quyền truy cập CSDL.");
+                        response = NetworkMessage.Failure(request, "DATABASE_UNAVAILABLE", "Không thể truy cập cơ sở dữ liệu. Kiểm tra cấu hình SQL Server tại HotelServer.");
+                    }
+                    catch (ArgumentException)
+                    {
+                        response = NetworkMessage.Failure(request, "SERVER_CONFIGURATION", "Cấu hình dữ liệu tại HotelServer không hợp lệ.");
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        response = NetworkMessage.Failure(request, "SERVER_CONFIGURATION", "Cấu hình dữ liệu tại HotelServer không hợp lệ.");
+                    }
                     await channel.WriteAsync(response).ConfigureAwait(false);
                     Log("Đã xử lý yêu cầu từ " + connection.Info.Endpoint + (response.success == true ? "." : " (lỗi " + response.error.code + ")."));
                 }
@@ -158,7 +180,7 @@ namespace HotelServer
             }
         }
 
-        private NetworkMessage HandleRequest(NetworkMessage request, string connectionId)
+        private async Task<NetworkMessage> HandleRequestAsync(NetworkMessage request, string connectionId)
         {
             if (request.type != "request" || string.IsNullOrWhiteSpace(request.requestId) || request.requestId.Length > 100
                 || string.IsNullOrWhiteSpace(request.action) || request.action.Length > 64)
@@ -169,6 +191,8 @@ namespace HotelServer
                     return NetworkMessage.Response(request, new { connectionId, protocolVersion = 1 });
                 case "PING":
                     return NetworkMessage.Response(request, new { serverTimeUtc = DateTime.UtcNow.ToString("O") });
+                case "GET_ROOMS":
+                    return NetworkMessage.Response(request, await rooms.GetRoomsAsync().ConfigureAwait(false));
                 default:
                     return NetworkMessage.Failure(request, "UNKNOWN_ACTION", "Lệnh chưa được hỗ trợ.");
             }

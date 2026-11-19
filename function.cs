@@ -14,91 +14,22 @@ namespace ChuuongTrinhQuanLyKhachSan
     {
         public static string GetConnectionString()
         {
-            string connString = ConfigurationManager.ConnectionStrings["HotelConnection"]?.ConnectionString;
-            if (string.IsNullOrEmpty(connString))
-            {
-                connString = "Data Source=.;Initial Catalog=dbMyHotel;Integrated Security=True";
-            }
-            return connString;
+            return HotelData.HotelDatabase.GetConnectionString();
         }
 
         public static void InitializeDatabase()
         {
             try
             {
-                string connString = GetConnectionString();
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connString);
-                string dbName = string.IsNullOrEmpty(builder.InitialCatalog) ? "dbMyHotel" : builder.InitialCatalog;
-
-                // 1. Ket noi master de kiem tra va tao database neu chua co
-                SqlConnectionStringBuilder masterBuilder = new SqlConnectionStringBuilder(connString)
-                {
-                    InitialCatalog = "master"
-                };
-
-                using (SqlConnection masterConn = new SqlConnection(masterBuilder.ConnectionString))
-                {
-                    masterConn.Open();
-                    string checkDbSql = $@"
-                        IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName.Replace("'", "''")}')
-                        BEGIN
-                            CREATE DATABASE [{dbName.Replace("]", "]]")}];
-                        END";
-                    using (SqlCommand cmd = new SqlCommand(checkDbSql, masterConn))
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-                // 2. Ket noi vao database dbMyHotel de tao cac bang neu chua co
-                using (SqlConnection dbConn = new SqlConnection(connString))
-                {
-                    dbConn.Open();
-                    string createTablesSql = @"
-                        IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'rooms')
-                        BEGIN
-                            CREATE TABLE rooms (
-                                roomid INT IDENTITY(1,1) PRIMARY KEY,
-                                roomNo VARCHAR(50) NOT NULL UNIQUE,
-                                roomType VARCHAR(100) NOT NULL,
-                                bed VARCHAR(50) NOT NULL,
-                                price BIGINT NOT NULL,
-                                booked VARCHAR(10) DEFAULT 'NO'
-                            );
-                        END;
-
-                        IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'customer')
-                        BEGIN
-                            CREATE TABLE customer (
-                                cid INT IDENTITY(1,1) PRIMARY KEY,
-                                cname VARCHAR(250) NOT NULL,
-                                mobile BIGINT NOT NULL,
-                                nationality VARCHAR(250) NOT NULL,
-                                gender VARCHAR(50) NOT NULL,
-                                dob VARCHAR(50) NOT NULL,
-                                idproof VARCHAR(250) NOT NULL,
-                                address VARCHAR(350) NOT NULL,
-                                checkin VARCHAR(250) NOT NULL,
-                                checkout VARCHAR(250) DEFAULT 'NO',
-                                chekout VARCHAR(250) DEFAULT 'NO',
-                                roomid INT NOT NULL,
-                                FOREIGN KEY (roomid) REFERENCES rooms(roomid)
-                            );
-                        END;";
-                    using (SqlCommand cmd = new SqlCommand(createTablesSql, dbConn))
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                }
+                HotelData.HotelDatabase.InitializeAsync(GetConnectionString()).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Khởi tạo kết nối CSDL thất bại:\n" + ex.Message + 
-                    "\n\nVui lòng kiểm tra dịch vụ SQL Server và cấu hình trong file App.config.", 
+                MessageBox.Show("Khởi tạo kết nối CSDL thất bại:\n" + ex.Message +
+                    "\n\nVui lòng kiểm tra dịch vụ SQL Server và cấu hình trong file App.config.",
                     "Cảnh báo CSDL", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
         protected SqlConnection getConnection()
         {
             return new SqlConnection(GetConnectionString());
