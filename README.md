@@ -7,8 +7,9 @@ Project WinForms độc lập, sử dụng .NET Framework 4.7.2. Nhấn **Khởi
 TCP và **Dừng** để giải phóng cổng. Đóng cửa sổ cũng giải phóng cổng. Nếu cổng đang
 được sử dụng, cửa sổ hiển thị lỗi và cho phép thử khởi động lại.
 
-Bước hiện tại chỉ bật/tắt TCP listener. Xử lý các client và gói tin sẽ được bổ sung
-ở các bước tiếp theo.
+Server nhận tối đa 100 client đồng thời bằng các vòng đọc bất đồng bộ. Cửa sổ hiển thị
+client đang kết nối và tối đa 500 dòng nhật ký gần nhất. Khi dừng, server đóng và chờ
+dọn xong các kết nối trước khi cho khởi động lại. Xử lý JSON được bổ sung ở bước tiếp theo.
 
 Mở solution trong Visual Studio hỗ trợ `.slnx`, chọn `HotelServer` làm Startup Project và chạy.
 Cấu hình trong `HotelServer/App.config`, mặc định địa chỉ `0.0.0.0`, cổng `8888`.
