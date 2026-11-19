@@ -21,6 +21,7 @@ namespace ChuuongTrinhQuanLyKhachSan
             function.InitializeDatabase();
 
             Application.Run(new Form1());
+            HotelNetworking.HotelConnection.Client.Dispose();
         }
     }
 }

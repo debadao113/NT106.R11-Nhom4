@@ -44,3 +44,11 @@ trong phản hồi. Gói sai cú pháp nhận `INVALID_REQUEST`, lệnh chưa h�
 Phản hồi có `type=response`, `requestId`, `action`, `success`, `data`, `error`.
 `HELLO` trả `connectionId` và `protocolVersion`. `PING` trả `serverTimeUtc`.
 Log chỉ ghi kết quả xử lý, tránh ghi nội dung dữ liệu của yêu cầu.
+
+### Kết nối từ WinForms
+
+Trong dashboard, nhấn **Kết nối server** rồi **Kết nối / PING** để thử kết nối.
+Chỉnh `HotelServerHost` và `HotelServerPort` trong `App.config` của ứng dụng khách.
+NetworkClient dùng chung một kết nối, ghép phản hồi bằng `requestId`, giới hạn kết nối
+5 giây và yêu cầu 10 giây. Sau khi mất kết nối hoặc timeout, dùng nút kết nối để thử lại.
+Các thao tác ghi dữ liệu cần kiểm tra kết quả hiện có trước khi gửi lại sau timeout.

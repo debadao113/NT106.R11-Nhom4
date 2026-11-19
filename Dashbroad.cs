@@ -15,6 +15,17 @@ namespace ChuuongTrinhQuanLyKhachSan
         public Dashbroad()
         {
             InitializeComponent();
+            var connectionButton = new Button
+            {
+                Text = "Kết nối server", AutoSize = true,
+                Location = new Point(20, ClientSize.Height - 50), Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+            };
+            connectionButton.Click += delegate
+            {
+                using (var dialog = new ServerConnectionForm()) dialog.ShowDialog(this);
+            };
+            Controls.Add(connectionButton);
+            connectionButton.BringToFront();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
