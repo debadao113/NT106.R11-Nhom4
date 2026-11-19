@@ -68,3 +68,16 @@ Lưu bằng SQL có tham số. Trùng số phòng trả `ROOM_EXISTS`, dữ li�
 
 Các màn hình đăng ký khách và trả phòng hiện vẫn dùng kết nối SQL trong `App.config`
 của ứng dụng WinForms. Trong giai đoạn tích hợp, cấu hình hai ứng dụng trỏ cùng database.
+
+### Đồng bộ danh sách phòng
+
+Sau khi `ADD_ROOM` lưu thành công, server phát gói `type=event`, `action=ROOMS_CHANGED`
+cho các client đang kết nối. Màn hình Thêm phòng tự tải danh sách mới, kể cả khi yêu cầu
+tải trước đó đang chạy. Khi mất kết nối, bảng được xóa để tránh dùng dữ liệu cũ. Khi
+kết nối lại qua nút **Tải lại phòng** hoặc cửa sổ kết nối, danh sách được lấy lại.
+Để thử, chạy HotelServer và hai phiên ứng dụng, thêm phòng ở A rồi quan sát B cập nhật.
+
+Các thay đổi từ màn hình đăng ký khách, trả phòng hoặc thao tác SQL trực tiếp hiện cần
+nhấn **Tải lại phòng**. Các màn hình này sẽ được chuyển sang server ở phần tích hợp sau.
+TCP hiện dành cho môi trường LAN thử nghiệm. Xác thực tài khoản và phân quyền tại
+server thuộc mốc tiếp theo trong kế hoạch.

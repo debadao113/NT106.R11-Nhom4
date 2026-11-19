@@ -18,15 +18,60 @@ namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
             InitializeComponent();
             DataGridView1.ReadOnly = true;
             DataGridView1.AllowUserToAddRows = false;
-            refreshButton = new Button { Text = "Tải lại phòng", AutoSize = true, Location = new Point(33, 680) };
-            connectionStatus = new Label { AutoSize = false, Location = new Point(180, 680), Size = new Size(680, 65) };
+            refreshButton = new Button
+            {
+                Text = "Tải lại phòng", AutoSize = true,
+                Location = new Point(DataGridView1.Left, DataGridView1.Bottom + 12)
+            };
+            connectionStatus = new Label
+            {
+                Name = "RoomConnectionStatus", AutoSize = false,
+                Location = new Point(DataGridView1.Left + 140, DataGridView1.Bottom + 12),
+                Size = new Size(Math.Max(200, DataGridView1.Width - 140), 65)
+            };
             refreshButton.Click += async delegate { await LoadRoomsAsync(); };
             Controls.Add(refreshButton);
             Controls.Add(connectionStatus);
+            HotelConnection.Client.EventReceived += OnServerEvent;
+            HotelConnection.Client.Connected += OnConnected;
+            HotelConnection.Client.Disconnected += OnDisconnected;
+            Disposed += delegate
+            {
+                HotelConnection.Client.EventReceived -= OnServerEvent;
+                HotelConnection.Client.Connected -= OnConnected;
+                HotelConnection.Client.Disconnected -= OnDisconnected;
+            };
+        }
+
+        private void OnServerEvent(NetworkMessage message)
+        {
+            if (message.action == "ROOMS_CHANGED") OnConnected();
+        }
+
+        private void OnConnected()
+        {
+            PostToUi(async () => await LoadRoomsAsync());
+        }
+
+        private void OnDisconnected()
+        {
+            PostToUi(() =>
+            {
+                DataGridView1.DataSource = null;
+                connectionStatus.Text = "Đã mất kết nối HotelServer. Nhấn Tải lại phòng để kết nối và lấy dữ liệu mới.";
+            });
+        }
+
+        private void PostToUi(Action action)
+        {
+            if (IsDisposed || !IsHandleCreated) return;
+            try { BeginInvoke(action); }
+            catch (InvalidOperationException) { /* The control was disposed while scheduling the refresh. */ }
         }
 
         private async Task LoadRoomsAsync()
         {
+            if (IsDisposed || Disposing) return;
             reloadRequested = true;
             if (loading) return;
             loading = true;
@@ -39,6 +84,11 @@ namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
                     connectionStatus.Text = "Đang tải phòng từ HotelServer...";
                     var rooms = await RoomService.GetRoomsAsync();
                     if (IsDisposed) return;
+                    if (!HotelConnection.Client.IsConnected)
+                    {
+                        OnDisconnected();
+                        return;
+                    }
                     DataGridView1.DataSource = rooms;
                     connectionStatus.Text = "Đã tải " + rooms.Count + " phòng từ HotelServer.";
                 } while (reloadRequested);

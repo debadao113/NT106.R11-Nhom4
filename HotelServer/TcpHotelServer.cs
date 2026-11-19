@@ -25,6 +25,7 @@ namespace HotelServer
         {
             public TcpClient Socket;
             public ClientInfo Info;
+            public JsonConnection Channel;
             public readonly TaskCompletionSource<bool> Completion =
                 new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
@@ -101,6 +102,7 @@ namespace HotelServer
                     var connection = new Connection
                     {
                         Socket = socket,
+                        Channel = new JsonConnection(socket.GetStream()),
                         Info = new ClientInfo
                         {
                             Id = Guid.NewGuid().ToString("N"),
@@ -137,7 +139,7 @@ namespace HotelServer
         {
             try
             {
-                var channel = new JsonConnection(connection.Socket.GetStream());
+                var channel = connection.Channel;
                 while (true)
                 {
                     NetworkMessage request;
@@ -217,11 +219,31 @@ namespace HotelServer
             if (room.roomNo.Length == 0 || room.roomNo.Length > 50 || room.roomType.Length == 0 || room.roomType.Length > 100
                 || room.bed.Length == 0 || room.bed.Length > 50 || room.price < 0)
                 return NetworkMessage.Failure(request, "VALIDATION_ERROR", "Số phòng tối đa 50 ký tự, loại phòng 100, loại giường 50. Các trường phải có nội dung và giá phải không âm.");
-            try { return NetworkMessage.Response(request, await rooms.AddRoomAsync(room).ConfigureAwait(false)); }
+            try
+            {
+                var saved = await rooms.AddRoomAsync(room).ConfigureAwait(false);
+                var changed = new NetworkMessage { type = "event", action = "ROOMS_CHANGED", data = new { roomId = saved.roomid } };
+                await Task.WhenAll(clients.Values.Select(client => SendEventAsync(client, changed))).ConfigureAwait(false);
+                return NetworkMessage.Response(request, saved);
+            }
             catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
             {
                 return NetworkMessage.Failure(request, "ROOM_EXISTS", "Số phòng đã tồn tại. Hãy tải lại danh sách phòng.");
             }
+        }
+
+        private static async Task SendEventAsync(Connection connection, NetworkMessage message)
+        {
+            try
+            {
+                var sending = connection.Channel.WriteAsync(message);
+                if (await Task.WhenAny(sending, Task.Delay(2000)).ConfigureAwait(false) != sending)
+                    connection.Socket.Close();
+                await sending.ConfigureAwait(false);
+            }
+            catch (IOException) { connection.Socket.Close(); }
+            catch (SocketException) { connection.Socket.Close(); }
+            catch (ObjectDisposedException) { }
         }
 
         private async Task DrainClientsAsync(Task accepting)

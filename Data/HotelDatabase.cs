@@ -8,8 +8,10 @@ namespace HotelData
     {
         public static string GetConnectionString()
         {
-            return ConfigurationManager.ConnectionStrings["HotelConnection"]?.ConnectionString
-                ?? "Data Source=.;Initial Catalog=dbMyHotel;Integrated Security=True;Connect Timeout=5";
+            string configured = ConfigurationManager.ConnectionStrings["HotelConnection"]?.ConnectionString;
+            return string.IsNullOrEmpty(configured)
+                ? "Data Source=.;Initial Catalog=dbMyHotel;Integrated Security=True;Connect Timeout=5"
+                : configured;
         }
 
         public static async Task InitializeAsync(string connectionString)

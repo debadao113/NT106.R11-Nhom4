@@ -22,6 +22,7 @@ namespace HotelNetworking
         private Session session;
         private bool disposed;
         public event Action<NetworkMessage> EventReceived;
+        public event Action Connected;
         public event Action Disconnected;
         public bool IsConnected { get { lock (sync) { return session != null; } } }
 
@@ -43,7 +44,8 @@ namespace HotelNetworking
                     if (await Task.WhenAny(connecting, Task.Delay(5000)).ConfigureAwait(false) != connecting)
                     {
                         socket.Close();
-                        try { await connecting.ConfigureAwait(false); } catch (Exception) { }
+                        // Observe a delayed DNS/connect failure without extending the timeout.
+                        _ = connecting.ContinueWith(task => { var ignored = task.Exception; }, TaskContinuationOptions.OnlyOnFaulted);
                         throw new TimeoutException("Kết nối HotelServer quá thời gian chờ.");
                     }
                     await connecting.ConfigureAwait(false);
@@ -56,6 +58,7 @@ namespace HotelNetworking
                     _ = ReceiveAsync(active);
                     var hello = await SendAsync("HELLO", null).ConfigureAwait(false);
                     if (hello.success != true) throw new IOException("HotelServer từ chối kết nối.");
+                    Connected?.Invoke();
                 }
                 catch
                 {
