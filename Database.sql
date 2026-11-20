@@ -1,4 +1,4 @@
--- Script tao co so du lieu va cac bang cho Do an Quan Ly Khach San (NT106)
+﻿-- Script tao co so du lieu va cac bang cho Do an Quan Ly Khach San (NT106)
 -- Chay tren SQL Server Management Studio (SSMS)
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'dbMyHotel')
@@ -59,4 +59,19 @@ BEGIN
         createdAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
+GO
+
+-- Ho so nhan vien; tai khoan dang nhap server duoc quan ly rieng.
+IF OBJECT_ID('dbo.employee', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.employee (
+        eid INT IDENTITY(1,1) PRIMARY KEY,
+        ename NVARCHAR(250) NOT NULL,
+        mobile BIGINT NOT NULL,
+        gender NVARCHAR(50) NOT NULL,
+        emailid NVARCHAR(250) NOT NULL,
+        username NVARCHAR(50) NOT NULL UNIQUE,
+        pass NVARCHAR(250) NOT NULL
+    );
+END;
 GO

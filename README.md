@@ -102,3 +102,20 @@ thông báo `ROOMS_CHANGED` yêu cầu kết nối đã đăng nhập. Thiếu �
 Danh sách client trên server hiển thị tên tài khoản để phân biệt các phiên lễ tân.
 Mỗi máy cài mới cần tạo tài khoản qua cửa sổ server sau khi cấu hình database.
 Các chức năng tài khoản khách, Google, OTP và phân quyền admin thuộc các mốc sau.
+
+### Tích hợp chi tiết khách hàng và nhân viên
+
+Dashboard đã nối hai trang **Chi tiết khách hàng** và **Nhân viên**. Trang khách hàng
+có bộ lọc tất cả, đang lưu trú và đã trả phòng, hỗ trợ cả dữ liệu cũ có checkout NULL
+và dữ liệu hiện dùng NO/YES. Trang nhân viên hỗ trợ đăng ký, danh sách và xóa hồ sơ.
+Bảng `employee` được tạo tự động khi khởi tạo cơ sở dữ liệu. Mật khẩu nhân viên mới
+được băm PBKDF2-SHA256 và không xuất hiện trong danh sách; dữ liệu cũ không bị viết lại.
+
+Hai trang này đang truy cập SQL theo `HotelConnection` trong App.config của client.
+Hồ sơ `employee` và tài khoản đăng nhập HotelServer trong `staff_accounts` hiện quản lý
+riêng. Thêm nhân viên tại dashboard chưa tạo tài khoản đăng nhập server; hãy dùng
+**Tài khoản lễ tân** trên HotelServer để cấp tài khoản truy cập.
+
+Đã kiểm tra tích hợp trên cơ sở dữ liệu tạm: khởi tạo lặp lại, chuyển trang, ba bộ lọc
+khách, thêm nhân viên có dấu nháy trong tên, băm mật khẩu, xóa nhân viên, tải danh sách
+và thu nhỏ cửa sổ. Kiểm tra đăng nhập nhiều client và đồng bộ phòng cũng đã qua.

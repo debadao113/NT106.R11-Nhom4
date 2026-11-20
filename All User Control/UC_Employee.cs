@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,6 +19,9 @@ namespace CTQLyKhachSan.ALL_User_Control
         public UC_Employee()
         {
             InitializeComponent();
+            txtPassword.PasswordChar = '*';
+            guna2DataGridView1.ReadOnly = guna2DataGridView2.ReadOnly = true;
+            guna2DataGridView1.AllowUserToAddRows = guna2DataGridView2.AllowUserToAddRows = false;
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -35,7 +40,7 @@ namespace CTQLyKhachSan.ALL_User_Control
         }
         public void getMaxId()
         {
-            query = "select max(eid) from employee";
+            query = "select ISNULL(max(eid),0) from employee";
             DataSet ds = fn.GetData(query);
             if (ds.Tables[0].Rows[0][0].ToString() != "")
             {
@@ -46,21 +51,28 @@ namespace CTQLyKhachSan.ALL_User_Control
 
         private void btnRegistation_Click(object sender, EventArgs e)
         {
-            if (txtName.Text != "" && txtMobile.Text != "" && txtGender.Text != "" && txtEmail.Text != "" && txtUserName.Text != "" && txtPassword.Text != "") ;
+            long mobile;
+            if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtMobile.Text) ||
+                string.IsNullOrWhiteSpace(txtGender.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) ||
+                string.IsNullOrWhiteSpace(txtUserName.Text) || string.IsNullOrWhiteSpace(txtPassword.Text) ||
+                !long.TryParse(txtMobile.Text, out mobile) || mobile <= 0)
             {
-                string name = txtName.Text;
-                Int64 mobile = Int64.Parse(txtMobile.Text);
-                string email = txtEmail.Text;
-                String gender = txtGender.Text;
-                String username = txtUserName.Text;
-                String pass = txtPassword.Text;
-
-                query = "insert into employee (ename, mobile, gender, emailid, username, pass) values ('" + name + "'," + mobile + ",'" + gender + "', '" + email + "','" + username + "','" + pass + "' ) ";
-                fn.setData(query, "Register Employee Success!!");
-
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin và số điện thoại hợp lệ.");
+                return;
+            }
+            try
+            {
+                string password;
+                using (var hash = new Rfc2898DeriveBytes(txtPassword.Text, 16, 210000, HashAlgorithmName.SHA256))
+                    password = "PBKDF2$210000$" + Convert.ToBase64String(hash.Salt) + "$" + Convert.ToBase64String(hash.GetBytes(32));
+                fn.setData("INSERT INTO employee (ename,mobile,gender,emailid,username,pass) VALUES (@name,@mobile,@gender,@email,@username,@pass)",
+                    "Đã thêm nhân viên.", new SqlParameter("@name", txtName.Text.Trim()), new SqlParameter("@mobile", mobile),
+                    new SqlParameter("@gender", txtGender.Text), new SqlParameter("@email", txtEmail.Text.Trim()),
+                    new SqlParameter("@username", txtUserName.Text.Trim()), new SqlParameter("@pass", password));
                 clearAll();
                 getMaxId();
             }
+            catch (SqlException ex) { MessageBox.Show(ex.Number == 2627 || ex.Number == 2601 ? "Tên tài khoản đã tồn tại." : "Không thể lưu nhân viên: " + ex.Message); }
         }
         public void clearAll()
         {
@@ -85,19 +97,20 @@ namespace CTQLyKhachSan.ALL_User_Control
         }
         public void setEmployee(DataGridView dgv)
         {
-            query = " Select * from employee";
+            query = "SELECT eid,ename,mobile,gender,emailid,username FROM employee";
             DataSet ds = fn.GetData(query);
             dgv.DataSource = ds.Tables[0];
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (txtID.Text != "")
+            int employeeId;
+            if (int.TryParse(txtID.Text, out employeeId) && employeeId > 0)
             {
                 if (MessageBox.Show("Are You Sure", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    query = "Delete from employee where eid = " + txtID.Text + "";
-                    fn.setData(query, "Information Employee deleted");
+                    query = "DELETE FROM employee WHERE eid = @id";
+                    fn.setData(query, "Information Employee deleted", new SqlParameter("@id", employeeId));
                     tabEmployee_SelectedIndexChanged(this, null);
                 }
             }

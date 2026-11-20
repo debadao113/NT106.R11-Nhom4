@@ -1,4 +1,4 @@
-using System.Configuration;
+﻿using System.Configuration;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 
@@ -79,6 +79,18 @@ BEGIN
         passwordIterations INT NOT NULL,
         isActive BIT NOT NULL DEFAULT 1,
         createdAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+    );
+END;
+IF OBJECT_ID('dbo.employee', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.employee (
+        eid INT IDENTITY(1,1) PRIMARY KEY,
+        ename NVARCHAR(250) NOT NULL,
+        mobile BIGINT NOT NULL,
+        gender NVARCHAR(50) NOT NULL,
+        emailid NVARCHAR(250) NOT NULL,
+        username NVARCHAR(50) NOT NULL UNIQUE,
+        pass NVARCHAR(250) NOT NULL
     );
 END;
 COMMIT TRANSACTION;";
