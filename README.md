@@ -1,6 +1,14 @@
 # NT106.R11-Nhom4
 NT106 .R11- Nhóm 4 
 
+## Cài project trên máy thành viên
+
+Xem [hướng dẫn đồng bộ môi trường nhóm](docs/TEAM_SETUP.md). Mở
+`ChuuongTrinhQuanLyKhachSan.sln` để dùng với Visual Studio 2022.
+Chạy `scripts/Setup-Team.ps1` để tạo cấu hình riêng cho máy và
+`scripts/Build-Team.ps1` để restore đúng phiên bản Guna rồi build cả hai ứng dụng.
+Cấu hình local và tài khoản trong database không được đồng bộ qua Git.
+
 ## HotelServer
 
 Project WinForms độc lập, sử dụng .NET Framework 4.7.2. Nhấn **Khởi động** để lắng nghe
