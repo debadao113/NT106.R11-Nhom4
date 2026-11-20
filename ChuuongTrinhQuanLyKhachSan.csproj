@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -69,6 +69,14 @@
     <Compile Include="All User Control\UC_CustomerRes.Designer.cs">
       <DependentUpon>UC_CustomerRes.cs</DependentUpon>
     </Compile>
+    <Compile Include="All User Control\UC_Employee.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="All User Control\UC_Employee.Designer.cs">
+      <DependentUpon>UC_Employee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="All User Control\UC_CustomerDetail.cs"><SubType>UserControl</SubType></Compile>
+    <Compile Include="All User Control\UC_CustomerDetail.Designer.cs"><DependentUpon>UC_CustomerDetail.cs</DependentUpon></Compile>
     <Compile Include="Dashbroad.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,7 +97,9 @@
     <Compile Include="Networking\StaffAccount.cs" />
     <Compile Include="Networking\RoomService.cs" />
     <Compile Include="Data\HotelDatabase.cs" />
-    <Compile Include="ServerConnectionForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="ServerConnectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="All User Control\UC_AddRoom.resx">
@@ -101,6 +111,10 @@
     <EmbeddedResource Include="All User Control\UC_CustomerRes.resx">
       <DependentUpon>UC_CustomerRes.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="All User Control\UC_Employee.resx">
+      <DependentUpon>UC_Employee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="All User Control\UC_CustomerDetail.resx"><DependentUpon>UC_CustomerDetail.cs</DependentUpon></EmbeddedResource>
     <EmbeddedResource Include="Dashbroad.resx">
       <DependentUpon>Dashbroad.cs</DependentUpon>
     </EmbeddedResource>

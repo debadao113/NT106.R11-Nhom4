@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,12 +51,13 @@ namespace ChuuongTrinhQuanLyKhachSan
             }
         }
 
-        public void setData(string query, string message)
+        public void setData(string query, string message, params SqlParameter[] parameters)
         {
             using (SqlConnection con = getConnection())
             {
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
+                    cmd.Parameters.AddRange(parameters);
                     con.Open();
                     cmd.ExecuteNonQuery();
                     con.Close();
