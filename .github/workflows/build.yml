@@ -1,0 +1,20 @@
+name: Windows build
+on:
+  push:
+    branches: [develop, 'feature/**']
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore and build both WinForms projects
+        shell: powershell
+        run: .\scripts\Build-Team.ps1 -Configuration ${{ matrix.configuration }}

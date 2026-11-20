@@ -15,3 +15,7 @@ packages/
 
 ## Other
 *.log
+
+# Machine-specific connection strings (may contain credentials)
+App.local.config
+HotelServer/App.local.config
