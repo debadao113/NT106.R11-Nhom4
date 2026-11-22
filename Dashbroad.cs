@@ -27,6 +27,7 @@ namespace ChuuongTrinhQuanLyKhachSan
             uC_AddRoom1.Visible = false;
             uC_CustomerRes1.Visible = false;
             uC_CustomerCheckOut1.Visible = false;
+            uC_CustomerDetails1.Visible = false;
             btnAddRoom.PerformClick();
         }
         private void btnAddRoom_Click(object sender, EventArgs e)
@@ -49,6 +50,13 @@ namespace ChuuongTrinhQuanLyKhachSan
             panelMoving.Left = btnCheckOut.Left + 60; // Di chuyển thanh trượt chỉ mục
             uC_CustomerCheckOut1.Visible = true;
             uC_CustomerCheckOut1.BringToFront(); // Đưa giao diện thanh toán lên trên cùng
+        }
+
+        private void btnCustomerDetail_Click(object sender, EventArgs e)
+        {
+            panelMoving.Left = btnCustomerDetail .Left + 60;
+            uC_CustomerDetails1.Visible = true;
+            uC_CustomerDetails1.BringToFront();
         }
     }
 }

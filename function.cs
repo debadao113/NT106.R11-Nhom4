@@ -7,6 +7,8 @@ using System.Data.SqlClient;
 using System.Windows.Forms;
 using System.Data;
 using System.Configuration;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace ChuuongTrinhQuanLyKhachSan
 {
@@ -104,8 +106,23 @@ namespace ChuuongTrinhQuanLyKhachSan
             return new SqlConnection(GetConnectionString());
         }
 
+        public static bool IsDesignMode()
+        {
+            string proc = Process.GetCurrentProcess().ProcessName;
+            return LicenseManager.UsageMode == LicenseUsageMode.Designtime
+                || string.Equals(proc, "devenv", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(proc, "DesignToolsServer", StringComparison.OrdinalIgnoreCase);
+        }
+
         public DataSet GetData(string query)
         {
+            if (IsDesignMode())
+            {
+                DataSet empty = new DataSet();
+                empty.Tables.Add(new DataTable());
+                return empty;
+            }
+
             using (SqlConnection con = getConnection())
             {
                 using (SqlCommand cmd = new SqlCommand(query, con))

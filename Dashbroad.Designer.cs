@@ -39,13 +39,15 @@
             this.btnCustomerRes = new Guna.UI2.WinForms.Guna2Button();
             this.btnAddRoom = new Guna.UI2.WinForms.Guna2Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.uC_CustomerDetails1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerDetails();
+            this.uC_CustomerCheckOut1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerCheckOut();
+            this.uC_CustomerRes1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerRes();
+            this.uC_AddRoom1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_AddRoom();
             this.panelMoving = new Guna.UI2.WinForms.Guna2Panel();
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2Elipse2 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2Elipse3 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
-            this.uC_CustomerCheckOut1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerCheckOut();
-            this.uC_CustomerRes1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerRes();
-            this.uC_AddRoom1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_AddRoom();
+            this.guna2Elipse4 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -61,9 +63,10 @@
             this.btnExit.ForeColor = System.Drawing.Color.White;
             this.btnExit.Image = ((System.Drawing.Image)(resources.GetObject("btnExit.Image")));
             this.btnExit.ImageSize = new System.Drawing.Size(35, 35);
-            this.btnExit.Location = new System.Drawing.Point(21, 12);
+            this.btnExit.Location = new System.Drawing.Point(14, 8);
+            this.btnExit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(37, 35);
+            this.btnExit.Size = new System.Drawing.Size(25, 23);
             this.btnExit.TabIndex = 0;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
@@ -78,9 +81,10 @@
             this.btnMinisize.ForeColor = System.Drawing.Color.White;
             this.btnMinisize.Image = ((System.Drawing.Image)(resources.GetObject("btnMinisize.Image")));
             this.btnMinisize.ImageSize = new System.Drawing.Size(35, 35);
-            this.btnMinisize.Location = new System.Drawing.Point(21, 53);
+            this.btnMinisize.Location = new System.Drawing.Point(14, 34);
+            this.btnMinisize.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnMinisize.Name = "btnMinisize";
-            this.btnMinisize.Size = new System.Drawing.Size(37, 35);
+            this.btnMinisize.Size = new System.Drawing.Size(25, 23);
             this.btnMinisize.TabIndex = 1;
             this.btnMinisize.Text = " ";
             // 
@@ -92,9 +96,10 @@
             this.panel1.Controls.Add(this.btnCheckOut);
             this.panel1.Controls.Add(this.btnCustomerRes);
             this.panel1.Controls.Add(this.btnAddRoom);
-            this.panel1.Location = new System.Drawing.Point(78, 12);
+            this.panel1.Location = new System.Drawing.Point(52, 8);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1760, 135);
+            this.panel1.Size = new System.Drawing.Size(1175, 89);
             this.panel1.TabIndex = 2;
             // 
             // btnEmployee
@@ -108,9 +113,10 @@
             this.btnEmployee.FillColor = System.Drawing.Color.SlateBlue;
             this.btnEmployee.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEmployee.ForeColor = System.Drawing.Color.White;
-            this.btnEmployee.Location = new System.Drawing.Point(1441, 3);
+            this.btnEmployee.Location = new System.Drawing.Point(961, 2);
+            this.btnEmployee.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnEmployee.Name = "btnEmployee";
-            this.btnEmployee.Size = new System.Drawing.Size(284, 116);
+            this.btnEmployee.Size = new System.Drawing.Size(189, 76);
             this.btnEmployee.TabIndex = 4;
             this.btnEmployee.Text = "Nhân viên";
             // 
@@ -125,11 +131,13 @@
             this.btnCustomerDetail.FillColor = System.Drawing.Color.SlateBlue;
             this.btnCustomerDetail.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCustomerDetail.ForeColor = System.Drawing.Color.White;
-            this.btnCustomerDetail.Location = new System.Drawing.Point(1064, -2);
+            this.btnCustomerDetail.Location = new System.Drawing.Point(710, -2);
+            this.btnCustomerDetail.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCustomerDetail.Name = "btnCustomerDetail";
-            this.btnCustomerDetail.Size = new System.Drawing.Size(284, 116);
+            this.btnCustomerDetail.Size = new System.Drawing.Size(189, 76);
             this.btnCustomerDetail.TabIndex = 3;
             this.btnCustomerDetail.Text = "Chi tiết khách hàng";
+            this.btnCustomerDetail.Click += new System.EventHandler(this.btnCustomerDetail_Click);
             // 
             // btnCheckOut
             // 
@@ -142,9 +150,10 @@
             this.btnCheckOut.FillColor = System.Drawing.Color.SlateBlue;
             this.btnCheckOut.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCheckOut.ForeColor = System.Drawing.Color.White;
-            this.btnCheckOut.Location = new System.Drawing.Point(708, 3);
+            this.btnCheckOut.Location = new System.Drawing.Point(472, 2);
+            this.btnCheckOut.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCheckOut.Name = "btnCheckOut";
-            this.btnCheckOut.Size = new System.Drawing.Size(284, 116);
+            this.btnCheckOut.Size = new System.Drawing.Size(189, 76);
             this.btnCheckOut.TabIndex = 2;
             this.btnCheckOut.Text = "Thanh toán";
             this.btnCheckOut.Click += new System.EventHandler(this.btnCheckOut_Click);
@@ -160,9 +169,10 @@
             this.btnCustomerRes.FillColor = System.Drawing.Color.SlateBlue;
             this.btnCustomerRes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCustomerRes.ForeColor = System.Drawing.Color.White;
-            this.btnCustomerRes.Location = new System.Drawing.Point(357, 3);
+            this.btnCustomerRes.Location = new System.Drawing.Point(238, 2);
+            this.btnCustomerRes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnCustomerRes.Name = "btnCustomerRes";
-            this.btnCustomerRes.Size = new System.Drawing.Size(284, 116);
+            this.btnCustomerRes.Size = new System.Drawing.Size(189, 76);
             this.btnCustomerRes.TabIndex = 1;
             this.btnCustomerRes.Text = "Đăng ký khách hàng";
             this.btnCustomerRes.Click += new System.EventHandler(this.btnCustomerRes_Click);
@@ -178,9 +188,10 @@
             this.btnAddRoom.FillColor = System.Drawing.Color.SlateBlue;
             this.btnAddRoom.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddRoom.ForeColor = System.Drawing.Color.White;
-            this.btnAddRoom.Location = new System.Drawing.Point(14, 3);
+            this.btnAddRoom.Location = new System.Drawing.Point(9, 2);
+            this.btnAddRoom.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnAddRoom.Name = "btnAddRoom";
-            this.btnAddRoom.Size = new System.Drawing.Size(284, 116);
+            this.btnAddRoom.Size = new System.Drawing.Size(189, 76);
             this.btnAddRoom.TabIndex = 0;
             this.btnAddRoom.Text = "Thêm phòng";
             this.btnAddRoom.Click += new System.EventHandler(this.btnAddRoom_Click);
@@ -188,20 +199,59 @@
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.uC_CustomerDetails1);
             this.panel2.Controls.Add(this.uC_CustomerCheckOut1);
             this.panel2.Controls.Add(this.uC_CustomerRes1);
             this.panel2.Controls.Add(this.uC_AddRoom1);
-            this.panel2.Location = new System.Drawing.Point(21, 269);
+            this.panel2.Location = new System.Drawing.Point(14, 175);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1860, 796);
+            this.panel2.Size = new System.Drawing.Size(1241, 518);
             this.panel2.TabIndex = 3;
+            // 
+            // uC_CustomerDetails1
+            // 
+            this.uC_CustomerDetails1.BackColor = System.Drawing.Color.White;
+            this.uC_CustomerDetails1.Location = new System.Drawing.Point(2, 2);
+            this.uC_CustomerDetails1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.uC_CustomerDetails1.Name = "uC_CustomerDetails1";
+            this.uC_CustomerDetails1.Size = new System.Drawing.Size(1197, 518);
+            this.uC_CustomerDetails1.TabIndex = 6;
+            // 
+            // uC_CustomerCheckOut1
+            // 
+            this.uC_CustomerCheckOut1.BackColor = System.Drawing.Color.White;
+            this.uC_CustomerCheckOut1.Location = new System.Drawing.Point(-1, -1);
+            this.uC_CustomerCheckOut1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.uC_CustomerCheckOut1.Name = "uC_CustomerCheckOut1";
+            this.uC_CustomerCheckOut1.Size = new System.Drawing.Size(1255, 554);
+            this.uC_CustomerCheckOut1.TabIndex = 6;
+            // 
+            // uC_CustomerRes1
+            // 
+            this.uC_CustomerRes1.BackColor = System.Drawing.Color.White;
+            this.uC_CustomerRes1.Location = new System.Drawing.Point(-1, -2);
+            this.uC_CustomerRes1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.uC_CustomerRes1.Name = "uC_CustomerRes1";
+            this.uC_CustomerRes1.Size = new System.Drawing.Size(1255, 554);
+            this.uC_CustomerRes1.TabIndex = 1;
+            // 
+            // uC_AddRoom1
+            // 
+            this.uC_AddRoom1.BackColor = System.Drawing.Color.White;
+            this.uC_AddRoom1.Location = new System.Drawing.Point(-2, -2);
+            this.uC_AddRoom1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.uC_AddRoom1.Name = "uC_AddRoom1";
+            this.uC_AddRoom1.Size = new System.Drawing.Size(1240, 518);
+            this.uC_AddRoom1.TabIndex = 0;
             // 
             // panelMoving
             // 
             this.panelMoving.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.panelMoving.Location = new System.Drawing.Point(78, 153);
+            this.panelMoving.Location = new System.Drawing.Point(52, 99);
+            this.panelMoving.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panelMoving.Name = "panelMoving";
-            this.panelMoving.Size = new System.Drawing.Size(284, 10);
+            this.panelMoving.Size = new System.Drawing.Size(189, 6);
             this.panelMoving.TabIndex = 5;
             // 
             // guna2Elipse2
@@ -212,42 +262,23 @@
             // 
             this.guna2Elipse3.TargetControl = this;
             // 
-            // uC_CustomerCheckOut1
+            // guna2Elipse4
             // 
-            this.uC_CustomerCheckOut1.BackColor = System.Drawing.Color.White;
-            this.uC_CustomerCheckOut1.Location = new System.Drawing.Point(-1, -1);
-            this.uC_CustomerCheckOut1.Name = "uC_CustomerCheckOut1";
-            this.uC_CustomerCheckOut1.Size = new System.Drawing.Size(1882, 852);
-            this.uC_CustomerCheckOut1.TabIndex = 6;
-            // 
-            // uC_CustomerRes1
-            // 
-            this.uC_CustomerRes1.BackColor = System.Drawing.Color.White;
-            this.uC_CustomerRes1.Location = new System.Drawing.Point(-1, -2);
-            this.uC_CustomerRes1.Name = "uC_CustomerRes1";
-            this.uC_CustomerRes1.Size = new System.Drawing.Size(1882, 852);
-            this.uC_CustomerRes1.TabIndex = 1;
-            // 
-            // uC_AddRoom1
-            // 
-            this.uC_AddRoom1.BackColor = System.Drawing.Color.White;
-            this.uC_AddRoom1.Location = new System.Drawing.Point(-2, -2);
-            this.uC_AddRoom1.Name = "uC_AddRoom1";
-            this.uC_AddRoom1.Size = new System.Drawing.Size(1860, 796);
-            this.uC_AddRoom1.TabIndex = 0;
+            this.guna2Elipse4.TargetControl = this;
             // 
             // Dashbroad
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(1946, 1106);
+            this.ClientSize = new System.Drawing.Size(1216, 717);
             this.Controls.Add(this.panelMoving);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnMinisize);
             this.Controls.Add(this.btnExit);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Dashbroad";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dashbroad";
@@ -277,5 +308,7 @@
         private All_User_Control.UC_CustomerRes uC_CustomerRes1;
         private Guna.UI2.WinForms.Guna2Elipse guna2Elipse3;
         private All_User_Control.UC_CustomerCheckOut uC_CustomerCheckOut1;
+        private Guna.UI2.WinForms.Guna2Elipse guna2Elipse4;
+        private All_User_Control.UC_CustomerDetails uC_CustomerDetails1;
     }
 }
