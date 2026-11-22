@@ -39,15 +39,15 @@
             this.btnCustomerRes = new Guna.UI2.WinForms.Guna2Button();
             this.btnAddRoom = new Guna.UI2.WinForms.Guna2Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.uC_CustomerDetails1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerDetails();
-            this.uC_CustomerCheckOut1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerCheckOut();
-            this.uC_CustomerRes1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerRes();
-            this.uC_AddRoom1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_AddRoom();
             this.panelMoving = new Guna.UI2.WinForms.Guna2Panel();
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2Elipse2 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2Elipse3 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2Elipse4 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
+            this.uC_CustomerDetails1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerDetails();
+            this.uC_CustomerCheckOut1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerCheckOut();
+            this.uC_CustomerRes1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_CustomerRes();
+            this.uC_AddRoom1 = new ChuuongTrinhQuanLyKhachSan.All_User_Control.UC_AddRoom();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -209,11 +209,32 @@
             this.panel2.Size = new System.Drawing.Size(1241, 518);
             this.panel2.TabIndex = 3;
             // 
+            // panelMoving
+            // 
+            this.panelMoving.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.panelMoving.Location = new System.Drawing.Point(52, 99);
+            this.panelMoving.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelMoving.Name = "panelMoving";
+            this.panelMoving.Size = new System.Drawing.Size(189, 6);
+            this.panelMoving.TabIndex = 5;
+            // 
+            // guna2Elipse2
+            // 
+            this.guna2Elipse2.TargetControl = this;
+            // 
+            // guna2Elipse3
+            // 
+            this.guna2Elipse3.TargetControl = this;
+            // 
+            // guna2Elipse4
+            // 
+            this.guna2Elipse4.TargetControl = this;
+            // 
             // uC_CustomerDetails1
             // 
             this.uC_CustomerDetails1.BackColor = System.Drawing.Color.White;
             this.uC_CustomerDetails1.Location = new System.Drawing.Point(2, 2);
-            this.uC_CustomerDetails1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.uC_CustomerDetails1.Margin = new System.Windows.Forms.Padding(2);
             this.uC_CustomerDetails1.Name = "uC_CustomerDetails1";
             this.uC_CustomerDetails1.Size = new System.Drawing.Size(1197, 518);
             this.uC_CustomerDetails1.TabIndex = 6;
@@ -244,27 +265,6 @@
             this.uC_AddRoom1.Name = "uC_AddRoom1";
             this.uC_AddRoom1.Size = new System.Drawing.Size(1240, 518);
             this.uC_AddRoom1.TabIndex = 0;
-            // 
-            // panelMoving
-            // 
-            this.panelMoving.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.panelMoving.Location = new System.Drawing.Point(52, 99);
-            this.panelMoving.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.panelMoving.Name = "panelMoving";
-            this.panelMoving.Size = new System.Drawing.Size(189, 6);
-            this.panelMoving.TabIndex = 5;
-            // 
-            // guna2Elipse2
-            // 
-            this.guna2Elipse2.TargetControl = this;
-            // 
-            // guna2Elipse3
-            // 
-            this.guna2Elipse3.TargetControl = this;
-            // 
-            // guna2Elipse4
-            // 
-            this.guna2Elipse4.TargetControl = this;
             // 
             // Dashbroad
             // 
