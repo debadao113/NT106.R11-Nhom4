@@ -19,6 +19,33 @@ namespace HotelData
             var settings = new SqlConnectionStringBuilder(connectionString);
             string database = settings.InitialCatalog;
             if (string.IsNullOrWhiteSpace(database)) throw new System.InvalidOperationException("Cấu hình phải có Initial Catalog.");
+            string mode = ConfigurationManager.AppSettings["DatabaseInitializationMode"];
+            string host = settings.DataSource.Trim();
+            if (host.StartsWith("tcp:", System.StringComparison.OrdinalIgnoreCase)) host = host.Substring(4);
+            host = host.Split(',')[0];
+            bool azureSql = host.EndsWith(".database.windows.net", System.StringComparison.OrdinalIgnoreCase);
+            if (!string.IsNullOrEmpty(mode)
+                && !string.Equals(mode, "Existing", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(mode, "CreateIfMissing", System.StringComparison.OrdinalIgnoreCase))
+                throw new System.InvalidOperationException("DatabaseInitializationMode phải là Existing hoặc CreateIfMissing.");
+
+            // Azure databases are provisioned separately. Validate the migrated schema
+            // without connecting to master or changing tables during application startup.
+            if (azureSql || string.Equals(mode, "Existing", System.StringComparison.OrdinalIgnoreCase))
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync().ConfigureAwait(false);
+                    const string validateSql = @"
+SELECT TOP (0) roomid, roomNo, roomType, bed, price, booked FROM dbo.rooms;
+SELECT TOP (0) cid, cname, mobile, nationality, gender, dob, idproof, address, checkin, checkout, chekout, roomid FROM dbo.customer;
+SELECT TOP (0) accountId, username, displayName, passwordHash, passwordSalt, passwordIterations, isActive, createdAt FROM dbo.staff_accounts;
+SELECT TOP (0) eid, ename, mobile, gender, emailid, username, pass FROM dbo.employee;";
+                    using (var command = new SqlCommand(validateSql, connection))
+                        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+                return;
+            }
             settings.InitialCatalog = "master";
             using (var connection = new SqlConnection(settings.ConnectionString))
             {

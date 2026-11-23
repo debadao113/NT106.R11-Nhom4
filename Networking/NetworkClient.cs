@@ -12,6 +12,7 @@ namespace HotelNetworking
         private sealed class Session
         {
             public TcpClient Socket;
+            public Stream Transport;
             public JsonConnection Channel;
             public readonly ConcurrentDictionary<string, TaskCompletionSource<NetworkMessage>> Pending =
                 new ConcurrentDictionary<string, TaskCompletionSource<NetworkMessage>>();
@@ -21,6 +22,11 @@ namespace HotelNetworking
         private readonly SemaphoreSlim connectLock = new SemaphoreSlim(1, 1);
         private Session session;
         private bool disposed;
+        private readonly TlsSettings tlsSettings;
+        public NetworkClient(TlsSettings tlsSettings = null)
+        {
+            this.tlsSettings = tlsSettings ?? TlsSettings.FromConfiguration();
+        }
         public event Action<NetworkMessage> EventReceived;
         public event Action Connected;
         public event Action Disconnected;
@@ -49,7 +55,8 @@ namespace HotelNetworking
                         throw new TimeoutException("Kết nối HotelServer quá thời gian chờ.");
                     }
                     await connecting.ConfigureAwait(false);
-                    active = new Session { Socket = socket, Channel = new JsonConnection(socket.GetStream()) };
+                    var transport = await TlsTransport.ConnectClientAsync(socket, tlsSettings).ConfigureAwait(false);
+                    active = new Session { Socket = socket, Transport = transport, Channel = new JsonConnection(transport) };
                     lock (sync)
                     {
                         if (disposed) throw new ObjectDisposedException(nameof(NetworkClient));
@@ -139,6 +146,7 @@ namespace HotelNetworking
                 notify = session == active;
                 if (notify) session = null;
                 active.Socket.Close();
+                active.Transport.Dispose();
                 foreach (var pending in active.Pending.Values)
                     pending.TrySetException(new IOException("Đã ngắt kết nối HotelServer. Kiểm tra dữ liệu trước khi gửi lại thao tác."));
                 active.Pending.Clear();

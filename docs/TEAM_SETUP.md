@@ -1,4 +1,4 @@
-# Cài và chạy chung cho nhóm NT106
+﻿# Cài và chạy chung cho nhóm NT106
 
 ## 1. Thống nhất môi trường
 
@@ -8,11 +8,11 @@
 | IDE | Visual Studio 2022 trở lên, workload **.NET desktop development** |
 | Framework | **.NET Framework 4.7.2 Developer Pack/Targeting Pack** |
 | Thư viện giao diện | **Guna.UI2.WinForms 2.0.3.5**, restore từ NuGet |
-| Database | SQL Server Developer/Express, Windows Authentication khi chạy độc lập |
+| Database | Azure SQL qua HotelServer; SQL local chỉ dành cho server phát triển riêng |
 | Nhánh tích hợp | `develop` |
 | Solution nên mở | `ChuuongTrinhQuanLyKhachSan.sln` |
 
-SSMS chỉ là công cụ quản trị; cần cài SQL Server Database Engine để chạy database.
+Máy client cloud không cần SSMS hoặc SQL Server Database Engine. Máy chạy server phát triển riêng mới cần SQL local.
 .NET SDK 8/9/10 và .NET Framework runtime không thay thế targeting pack 4.7.2.
 Không nâng riêng framework hoặc phiên bản Guna trên từng máy.
 
@@ -39,7 +39,7 @@ git rev-parse --short HEAD
 Cả nhóm đối chiếu cùng mã commit. Nếu `--ff-only` thất bại, kiểm tra lịch sử nhánh,
 không dùng `reset --hard` để xóa phần việc chưa tích hợp.
 
-## 3. Mỗi máy chạy độc lập (cách mặc định khi phát triển)
+## 3. Chạy server riêng để phát triển (tùy chọn)
 
 Mở PowerShell tại thư mục repository. Ví dụ SQL Server Express:
 
@@ -95,25 +95,20 @@ Kiểm tra TCP chỉ xác nhận cổng mở; không chứng minh đăng nhập 
 `-CheckDatabase` kiểm tra các bảng/cột cần có và có tài khoản đang hoạt động; chưa kiểm
 tra đầy đủ kiểu dữ liệu, constraint hoặc mật khẩu cụ thể.
 
-## 5. Khi cả nhóm muốn dùng chung dữ liệu
+## 5. Cả nhóm dùng chung Azure SQL
 
-Git đồng bộ mã nguồn. Để dùng chung bản ghi, cần cùng kết nối đến một database.
-Hiện tại đăng nhập/thêm phòng đi qua HotelServer, còn đăng ký khách, trả phòng, chi tiết
-khách và nhân viên vẫn truy cập SQL trực tiếp. Vì vậy chưa thể chỉ đổi IP server và
-coi client là đã dùng chung toàn bộ dữ liệu.
+Toàn bộ nghiệp vụ đã đi qua HotelServer. Máy client chỉ cần cấu hình host, cổng và
+pin chứng chỉ TLS, không cài SQL Server và không giữ mật khẩu Azure SQL.
+Xem phần **Chạy client với Azure SQL hoàn toàn trên cloud** trong [README](../README.md).
 
-Trong LAN thử nghiệm, muốn dùng chung phải cấu hình cả hai điều kiện:
+```powershell
+powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\Setup-CloudClient.ps1 -CertificatePath 'C:\duong-dan\HotelServer-public.cer'
+powershell -NoProfile -File .\scripts\Build-Team.ps1 -Configuration Release
+```
 
-1. `HotelServerHost` của client trỏ tới IP máy chạy HotelServer; `127.0.0.1` chỉ trỏ về chính máy đang chạy client.
-2. `HotelConnection` trong cấu hình client/server cùng trỏ tới SQL instance và database dùng chung; SQL Server cho phép kết nối từ các máy đó và từng máy được cấp quyền phù hợp.
-
-Windows Authentication khi dùng SQL từ xa đòi hỏi tài khoản Windows được SQL Server
-chấp nhận. Nếu nhóm dùng SQL Authentication, quản trị viên cấp tài khoản riêng phù hợp,
-điền vào `App.local.config`; không đưa mật khẩu vào Git. Không dùng cổng SQL/TCP công khai
-trên Internet để thay cho thiết kế kết nối này.
-
-Hướng phát triển tiếp theo: chuyển các nghiệp vụ còn lại sang HotelServer, thống nhất
-migration và dữ liệu mẫu. Khi hoàn tất, máy client chỉ cần cấu hình địa chỉ HotelServer.
+Không chạy Initialize-TeamDatabase trên máy chỉ dùng cloud. Quản trị viên cần cho
+phép IP Internet của từng máy trong NSG và Windows Firewall cổng 8888. Các tài khoản
+lễ tân nằm trong database dùng chung; không tạo lại tài khoản trên từng máy.
 
 ## 6. Bảng xử lý lỗi thường gặp
 
@@ -128,7 +123,7 @@ migration và dữ liệu mẫu. Khi hoàn tất, máy client chỉ cần cấu 
 | Cannot open database/Invalid object name | Chạy `Initialize-TeamDatabase.ps1`, kiểm tra đúng database và schema |
 | Đăng nhập sai với `nhom4/123` | Tài khoản chưa tạo trên database hiện tại hoặc mật khẩu khác |
 | Connection refused/timeout TCP | Bật server, kiểm tra host/cổng, LAN và firewall trên máy server |
-| Dữ liệu hai trang khác nhau | So sánh SQL instance/database của client với server |
+| Dữ liệu hai máy khác nhau | Đối chiếu cùng commit, HotelServerHost, pin TLS và server đang chạy |
 | Không copy được exe khi build | Đóng các phiên app đang chạy rồi build lại |
 
 Khi báo lỗi, gửi mã commit, thông báo lỗi đầu tiên và kết quả script kiểm tra môi trường.

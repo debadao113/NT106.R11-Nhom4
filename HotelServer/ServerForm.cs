@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
+using HotelNetworking;
 
 namespace HotelServer
 {
@@ -107,7 +108,8 @@ namespace HotelServer
             try
             {
                 server.Start(listenAddress, listenPort);
-                status.Text = "Đang lắng nghe TCP tại " + listenAddress + ":" + listenPort + ".";
+                status.Text = "Đang lắng nghe " + (TlsSettings.FromConfiguration().Enabled ? "TLS 1.2" : "TCP")
+                    + " tại " + listenAddress + ":" + listenPort + ".";
                 status.ForeColor = Color.DarkGreen;
                 startButton.Enabled = false;
                 stopButton.Enabled = true;

@@ -90,14 +90,16 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="function.cs" />
     <Compile Include="Networking\JsonConnection.cs" />
     <Compile Include="Networking\NetworkClient.cs" />
+    <Compile Include="Networking\TlsTransport.cs" />
     <Compile Include="Networking\HotelConnection.cs" />
     <Compile Include="Networking\Room.cs" />
     <Compile Include="Networking\StaffAccount.cs" />
     <Compile Include="Networking\RoomService.cs" />
-    <Compile Include="Data\HotelDatabase.cs" />
+    <Compile Include="Networking\HotelRecords.cs" />
+    <Compile Include="Networking\HotelServices.cs" />
+    <Compile Include="Networking\CloudScreen.cs" />
     <Compile Include="ServerConnectionForm.cs">
       <SubType>Form</SubType>
     </Compile>

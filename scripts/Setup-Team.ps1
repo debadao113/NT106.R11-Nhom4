@@ -22,7 +22,7 @@ foreach ($project in @('', 'HotelServer')) {
     $sql['Initial Catalog'] = $Database
     $sql['Integrated Security'] = $true
     $sql['Connect Timeout'] = 5
-    $config.configuration.connectionStrings.add.connectionString = $sql.ConnectionString
+    if ($project) { $config.configuration.connectionStrings.add.connectionString = $sql.ConnectionString }
     foreach ($setting in $config.configuration.appSettings.add) {
         if ($setting.key -eq 'HotelServerHost') { $setting.value = $ServerHost }
         if ($setting.key -in @('HotelServerPort', 'ListenPort')) { $setting.value = [string]$Port }

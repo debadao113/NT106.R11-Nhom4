@@ -9,6 +9,8 @@ using HotelNetworking;
 using HotelData;
 using System.Data.SqlClient;
 using System.Collections.Generic;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace HotelServer
 {
@@ -27,6 +29,8 @@ namespace HotelServer
             public TcpClient Socket;
             public ClientInfo Info;
             public JsonConnection Channel;
+            public Stream Transport;
+            public X509Certificate2 Certificate;
             public StaffAccount Account;
             public int FailedLogins;
             public readonly TaskCompletionSource<bool> Completion =
@@ -40,12 +44,17 @@ namespace HotelServer
         private Task stopTask = Task.CompletedTask;
         private readonly RoomRepository rooms;
         private readonly StaffAccountRepository accounts;
+        private readonly HotelOperationsRepository operations;
+        private readonly TlsSettings tlsSettings;
+        private X509Certificate2 serverCertificate;
         public event Action<string> Logged;
 
-        public TcpHotelServer(string connectionString = null)
+        public TcpHotelServer(string connectionString = null, TlsSettings tlsSettings = null)
         {
+            this.tlsSettings = tlsSettings ?? TlsSettings.FromConfiguration();
             rooms = new RoomRepository(connectionString ?? HotelDatabase.GetConnectionString());
             accounts = new StaffAccountRepository(connectionString);
+            operations = new HotelOperationsRepository(connectionString ?? HotelDatabase.GetConnectionString());
         }
 
         public bool IsRunning { get { lock (lifecycle) { return listener != null; } } }
@@ -62,17 +71,20 @@ namespace HotelServer
                 if (listener != null || !stopTask.IsCompleted)
                     throw new InvalidOperationException("Server đang chạy hoặc đang dừng.");
                 var candidate = new TcpListener(address, port);
+                var certificate = TlsTransport.LoadServerCertificate(tlsSettings);
                 try
                 {
                     candidate.ExclusiveAddressUse = true;
                     candidate.Start();
                     listener = candidate;
-                    acceptTask = AcceptClientsAsync(candidate);
-                    Log("Lắng nghe TCP tại " + candidate.LocalEndpoint);
+                    serverCertificate = certificate;
+                    acceptTask = AcceptClientsAsync(candidate, certificate);
+                    Log("Lắng nghe " + (certificate == null ? "TCP" : "TLS 1.2") + " tại " + candidate.LocalEndpoint);
                 }
                 catch
                 {
                     candidate.Stop();
+                    certificate?.Dispose();
                     throw;
                 }
             }
@@ -86,12 +98,14 @@ namespace HotelServer
                 var activeListener = listener;
                 listener = null;
                 activeListener.Stop();
-                stopTask = DrainClientsAsync(acceptTask);
+                var certificate = serverCertificate;
+                serverCertificate = null;
+                stopTask = DrainClientsAsync(acceptTask, certificate);
                 return stopTask;
             }
         }
 
-        private async Task AcceptClientsAsync(TcpListener activeListener)
+        private async Task AcceptClientsAsync(TcpListener activeListener, X509Certificate2 certificate)
         {
             try
             {
@@ -107,7 +121,7 @@ namespace HotelServer
                     var connection = new Connection
                     {
                         Socket = socket,
-                        Channel = new JsonConnection(socket.GetStream()),
+                        Certificate = certificate,
                         Info = new ClientInfo
                         {
                             Id = Guid.NewGuid().ToString("N"),
@@ -144,7 +158,9 @@ namespace HotelServer
         {
             try
             {
-                var channel = connection.Channel;
+                connection.Transport = await TlsTransport.AcceptServerAsync(connection.Socket, connection.Certificate).ConfigureAwait(false);
+                var channel = new JsonConnection(connection.Transport);
+                connection.Channel = channel;
                 while (true)
                 {
                     NetworkMessage request;
@@ -158,6 +174,10 @@ namespace HotelServer
                     if (request == null) break;
                     NetworkMessage response;
                     try { response = await HandleRequestAsync(request, connection).ConfigureAwait(false); }
+                    catch (OperationException ex)
+                    {
+                        response = NetworkMessage.Failure(request, ex.Code, ex.Message);
+                    }
                     catch (SqlException ex)
                     {
                         Log("Lỗi SQL Server " + ex.Number + ". Kiểm tra kết nối và quyền truy cập CSDL.");
@@ -177,11 +197,14 @@ namespace HotelServer
                 }
             }
             catch (IOException) { }
+            catch (AuthenticationException) { Log("Từ chối kết nối: bắt tay TLS không hợp lệ."); }
+            catch (TimeoutException) { Log("Từ chối kết nối: bắt tay TLS quá thời gian chờ."); }
             catch (SocketException) { }
             catch (ObjectDisposedException) { }
             finally
             {
                 connection.Socket.Close();
+                connection.Transport?.Dispose();
                 Connection removed;
                 clients.TryRemove(connection.Info.Id, out removed);
                 Log("Client ngắt kết nối: " + connection.Info.Endpoint);
@@ -225,6 +248,14 @@ namespace HotelServer
                     connection.Info.Username = account.username;
                     connection.FailedLogins = 0;
                     return NetworkMessage.Response(request, account);
+                case "GET_CUSTOMERS":
+                case "REGISTER_CUSTOMER":
+                case "CHECKOUT_CUSTOMER":
+                case "GET_EMPLOYEES":
+                case "ADD_EMPLOYEE":
+                case "DELETE_EMPLOYEE":
+                    if (connection.Account == null) return AuthenticationRequired(request);
+                    return await HandleOperationAsync(request).ConfigureAwait(false);
                 default:
                     return NetworkMessage.Failure(request, "UNKNOWN_ACTION", "Lệnh chưa được hỗ trợ.");
             }
@@ -233,6 +264,64 @@ namespace HotelServer
         private static NetworkMessage AuthenticationRequired(NetworkMessage request)
         {
             return NetworkMessage.Failure(request, "AUTH_REQUIRED", "Vui lòng đăng nhập tài khoản lễ tân.");
+        }
+
+        private static T ReadData<T>(NetworkMessage request)
+        {
+            if (!(request.data is Dictionary<string, object>))
+                throw new OperationException("VALIDATION_ERROR", "Dữ liệu yêu cầu không hợp lệ.");
+            try { return new System.Web.Script.Serialization.JavaScriptSerializer().ConvertToType<T>(request.data); }
+            catch (Exception ex) when (ex is ArgumentException || ex is InvalidOperationException || ex is FormatException || ex is OverflowException)
+            { throw new OperationException("VALIDATION_ERROR", "Kiểu dữ liệu yêu cầu không hợp lệ."); }
+        }
+        private static object Field(NetworkMessage request, string name)
+        {
+            object value;
+            var data=request.data as Dictionary<string,object>;
+            if(data==null || !data.TryGetValue(name,out value)) throw new OperationException("VALIDATION_ERROR","Thiếu trường " + name + ".");
+            return value;
+        }
+        private static string StringField(NetworkMessage request,string name)
+        {
+            var value=Field(request,name) as string;
+            if(value==null) throw new OperationException("VALIDATION_ERROR","Trường " + name + " phải là chuỗi.");
+            return value;
+        }
+        private static int IdField(NetworkMessage request,string name)
+        {
+            var value=Field(request,name);
+            if(!(value is int) || (int)value<=0) throw new OperationException("VALIDATION_ERROR","Mã không hợp lệ.");
+            return (int)value;
+        }
+        private async Task<NetworkMessage> HandleOperationAsync(NetworkMessage request)
+        {
+            object result;
+            switch(request.action)
+            {
+                case "GET_CUSTOMERS":
+                    result=await operations.GetCustomersAsync(StringField(request,"status"),StringField(request,"name")).ConfigureAwait(false); break;
+                case "REGISTER_CUSTOMER":
+                    result=await operations.RegisterAsync(ReadData<CustomerRegistration>(request)).ConfigureAwait(false);
+                    await BroadcastAsync("ROOMS_CHANGED").ConfigureAwait(false);
+                    await BroadcastAsync("CUSTOMERS_CHANGED").ConfigureAwait(false); break;
+                case "CHECKOUT_CUSTOMER":
+                    result=await operations.CheckoutAsync(IdField(request,"cid"),StringField(request,"date")).ConfigureAwait(false);
+                    await BroadcastAsync("ROOMS_CHANGED").ConfigureAwait(false);
+                    await BroadcastAsync("CUSTOMERS_CHANGED").ConfigureAwait(false); break;
+                case "GET_EMPLOYEES": result=await operations.GetEmployeesAsync().ConfigureAwait(false); break;
+                case "ADD_EMPLOYEE":
+                    result=await operations.AddEmployeeAsync(ReadData<EmployeeRegistration>(request)).ConfigureAwait(false);
+                    await BroadcastAsync("EMPLOYEES_CHANGED").ConfigureAwait(false); break;
+                default:
+                    result=await operations.DeleteEmployeeAsync(IdField(request,"eid")).ConfigureAwait(false);
+                    await BroadcastAsync("EMPLOYEES_CHANGED").ConfigureAwait(false); break;
+            }
+            return NetworkMessage.Response(request,result);
+        }
+        private Task BroadcastAsync(string action)
+        {
+            var changed=new NetworkMessage { type="event",action=action };
+            return Task.WhenAll(clients.Values.Where(client=>client.Account!=null).Select(client=>SendEventAsync(client,changed)));
         }
 
         private async Task<NetworkMessage> AddRoomAsync(NetworkMessage request)
@@ -278,13 +367,17 @@ namespace HotelServer
             catch (ObjectDisposedException) { }
         }
 
-        private async Task DrainClientsAsync(Task accepting)
+        private async Task DrainClientsAsync(Task accepting, X509Certificate2 certificate)
         {
-            await accepting.ConfigureAwait(false);
-            var activeClients = clients.Values.ToArray();
-            foreach (var client in activeClients) client.Socket.Close();
-            await Task.WhenAll(activeClients.Select(client => client.Completion.Task)).ConfigureAwait(false);
-            Log("Server đã dừng, các kết nối đã đóng.");
+            try
+            {
+                await accepting.ConfigureAwait(false);
+                var activeClients = clients.Values.ToArray();
+                foreach (var client in activeClients) client.Socket.Close();
+                await Task.WhenAll(activeClients.Select(client => client.Completion.Task)).ConfigureAwait(false);
+                Log("Server đã dừng, các kết nối đã đóng.");
+            }
+            finally { certificate?.Dispose(); }
         }
 
         private void Log(string message)

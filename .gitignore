@@ -19,3 +19,5 @@ packages/
 # Machine-specific connection strings (may contain credentials)
 App.local.config
 HotelServer/App.local.config
+*.pfx
+*.p12

@@ -1,113 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HotelNetworking;
 
 namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
 {
     public partial class UC_CustomerRes : UserControl
     {
-        function fn = new function();
-        string query;
-        int rid;
+        private List<Room> rooms=new List<Room>();
+        private readonly CloudScreen cloud;
         public UC_CustomerRes()
         {
             InitializeComponent();
+            txtDob.Value=DateTime.Today; txtCheckin.Value=DateTime.Today;
+            cloud=new CloudScreen(this,"ROOMS_CHANGED",LoadRoomsAsync,()=> { rooms.Clear(); txtRoomNo.Items.Clear(); txtPrice.Clear(); });
         }
-
-        public void setcombobox(string query, ComboBox combo)
+        private async Task LoadRoomsAsync()
         {
-            SqlDataReader sdr = fn.getForCombo(query);
-            while(sdr.Read())
-            {
-                for(int i =0; i< sdr.FieldCount; i++)
-                {
-                    combo.Items.Add(sdr.GetString(i));
-                }    
-            }
-            sdr.Close();
+            var result=await RoomService.GetRoomsAsync();
+            if(IsDisposed || HotelConnection.CurrentAccount==null) return;
+            rooms=result; FillRooms();
         }
-        private void UC_CustomerRes_Load(object sender, EventArgs e)
+        private void FillRooms()
         {
-
+            var selected=txtRoomNo.Text;
+            txtRoomNo.Items.Clear(); txtPrice.Clear();
+            foreach(var room in rooms.Where(r=>r.bed==txtBed.Text && r.roomType==txtRoom.Text && string.Equals(r.booked ?? "NO","NO",StringComparison.OrdinalIgnoreCase)))
+                txtRoomNo.Items.Add(room.roomNo);
+            if(txtRoomNo.Items.Contains(selected)) txtRoomNo.SelectedItem=selected;
         }
-
-        private void txtBed_SelectedIndexChanged(object sender, EventArgs e)
+        private async void UC_CustomerRes_Load(object sender,EventArgs e) { await cloud.RefreshAsync(); }
+        private void txtBed_SelectedIndexChanged(object sender,EventArgs e) { txtRoom.SelectedIndex=-1; FillRooms(); }
+        private async void txtRoom_SelectedIndexChanged(object sender,EventArgs e) { FillRooms(); if(cloud!=null) await cloud.RefreshAsync(); }
+        private void txtRoomNo_SelectedIndexChanged(object sender,EventArgs e)
         {
-            txtRoom.SelectedIndex = -1;
-            txtRoomNo.Items.Clear();
-            txtPrice.Clear();
+            var room=rooms.FirstOrDefault(r=>r.roomNo==txtRoomNo.Text);
+            txtPrice.Text=room==null?"":room.price.ToString();
         }
-
-        private void txtRoom_SelectedIndexChanged(object sender, EventArgs e)
+        private async void btnAlloteRoom_Click(object sender,EventArgs e)
         {
-            txtRoomNo.Items.Clear();
-            query = "select roomNo from rooms where bed = '" + txtBed.Text + "' and roomType = '" + txtRoom.Text + "' and booked = 'NO'";
-            setcombobox(query, txtRoomNo);
-
-        }
-
-        private void txtRoomNo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            query = "select price, roomid from rooms where roomNo = '" + txtRoomNo.Text + "'";
-            DataSet ds = fn.GetData(query);
-            if (ds.Tables[0].Rows.Count > 0)
-            {
-                txtPrice.Text = ds.Tables[0].Rows[0][0].ToString(); // Lấy giá tiền gán vào txtPrice
-                rid = int.Parse(ds.Tables[0].Rows[0][1].ToString()); // Lấy roomid lưu vào biến rid
-            }
-        }
-
-        private void btnAlloteRoom_Click(object sender, EventArgs e)
-        {
-            if (txtName.Text != "" && txtContact.Text != "" && txtNationality.Text != "" && txtGender.Text != "" && txtDob.Text != "" && txtIDProof.Text != "" && txtAddress.Text != "" && txtCheckin.Text != "" && txtPrice.Text != "")
-            {
-                String cname = txtName.Text;
-                Int64 mobile = Int64.Parse(txtContact.Text);
-                String national = txtNationality.Text;
-                String gender = txtGender.Text;
-                String dob = txtDob.Text;
-                String idproof = txtIDProof.Text;
-                String address = txtAddress.Text;
-                String checkin = txtCheckin.Text;
-
-                // Lưu thông tin khách hàng và cập nhật phòng sang trạng thái đã đặt (booked = 'YES')
-                query = "insert into customer (cname, mobile, nationality, gender, dob, idproof, address, checkin, roomid) values ('" + cname + "', " + mobile + ", '" + national + "', '" + gender + "', '" + dob + "', '" + idproof + "', '" + address + "', '" + checkin + "', " + rid + ") update rooms set booked = 'YES' where roomNo = '" + txtRoomNo.Text + "'";
-
-                fn.setData(query, "Số phòng " + txtRoomNo.Text + " đăng ký khách hàng thành công!");
-                clearAll();
-            }
-            else
-            {
-                MessageBox.Show("Xin vui lòng nhập đầy đủ thông tin!", "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            long mobile;
+            var room=rooms.FirstOrDefault(r=>r.roomNo==txtRoomNo.Text);
+            if(room==null || !long.TryParse(txtContact.Text,out mobile) || mobile<=0)
+            { MessageBox.Show("Chọn phòng trống và nhập số điện thoại hợp lệ."); return; }
+            var customer=new CustomerRegistration { roomid=room.roomid,cname=txtName.Text,mobile=mobile,nationality=txtNationality.Text,
+                gender=txtGender.Text,dob=txtDob.Value.ToString("yyyy-MM-dd"),idproof=txtIDProof.Text,address=txtAddress.Text,checkin=txtCheckin.Value.ToString("yyyy-MM-dd") };
+            await cloud.WriteAsync(btnAlloteRoom,async()=> {
+                await HotelServices.RegisterCustomerAsync(customer);
+                if(IsDisposed) return;
+                clearAll(); MessageBox.Show("Đã đăng ký khách vào phòng "+room.roomNo+"."); await cloud.RefreshAsync();
+            });
         }
         public void clearAll()
         {
-            txtName.Clear();
-            txtContact.Clear();
-            txtNationality.Clear();
-            txtGender.SelectedIndex = -1;
-            txtDob.ResetText();
-            txtIDProof.Clear();
-            txtAddress.Clear();
-            txtCheckin.ResetText();
-            txtBed.SelectedIndex = -1;
-            txtRoom.SelectedIndex = -1;
-            txtRoomNo.Items.Clear();
-            txtPrice.Clear();
+            txtName.Clear(); txtContact.Clear(); txtNationality.Clear(); txtGender.SelectedIndex=-1;
+            txtDob.Value=DateTime.Today; txtIDProof.Clear(); txtAddress.Clear(); txtCheckin.Value=DateTime.Today;
+            txtBed.SelectedIndex=-1; txtRoom.SelectedIndex=-1; txtRoomNo.Items.Clear(); txtPrice.Clear();
         }
-
-        private void UC_CustomerRes_Leave(object sender, EventArgs e)
-        {
-            clearAll();
-        }
+        private void UC_CustomerRes_Leave(object sender,EventArgs e) { clearAll(); }
     }
 }

@@ -11,20 +11,16 @@ if (Test-Path -LiteralPath $guna) { Write-Host 'OK Guna.UI2.WinForms 2.0.3.5 res
 else { Write-Host 'INFO Guna is not restored yet; run scripts/Build-Team.ps1.' }
 try {
     $clientConfig = Get-TeamConfig
-    $serverConfig = Get-TeamConfig 'HotelServer'
-    $clientSql = Get-TeamSqlSettings $clientConfig
-    $serverSql = Get-TeamSqlSettings $serverConfig
-    if ($clientSql.DataSource -ne $serverSql.DataSource -or $clientSql.InitialCatalog -ne $serverSql.InitialCatalog) {
-        throw 'Client and server SQL instance/database differ. Several client pages still use SQL directly.'
+    Write-Host 'OK Client uses HotelServer; no local SQL connection is required.'
+    if ($CheckSql -or $CheckDatabase) {
+        $serverSql = Get-TeamSqlSettings (Get-TeamConfig 'HotelServer')
     }
-    Write-Host "OK Client/server SQL target: $($clientSql.DataSource) / $($clientSql.InitialCatalog)"
     if ($CheckSql) {
-        foreach ($original in @($clientSql, $serverSql)) {
+        foreach ($original in @($serverSql)) {
             $settings = [System.Data.SqlClient.SqlConnectionStringBuilder]::new($original.ConnectionString)
-            $settings['Initial Catalog'] = 'master'
             $settings['Connect Timeout'] = 5
             $connection = [System.Data.SqlClient.SqlConnection]::new($settings.ConnectionString)
-            try { $connection.Open(); Write-Host 'OK SQL connection (master); database initialization is a separate step.' }
+            try { $connection.Open(); Write-Host 'OK HotelServer SQL connection; database initialization is a separate step.' }
             finally { $connection.Dispose() }
         }
     }

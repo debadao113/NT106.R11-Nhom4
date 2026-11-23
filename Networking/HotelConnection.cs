@@ -26,7 +26,7 @@ namespace HotelNetworking
         {
             lock (sync) { account = null; }
             await ConnectAsync().ConfigureAwait(false);
-            var response = await Client.SendAsync("LOGIN", new { username, password }).ConfigureAwait(false);
+            var response = await Client.SendAsync("LOGIN", new { username, password }, 90000).ConfigureAwait(false);
             if (response.success != true) throw new IOException(response.error?.message ?? "Đăng nhập thất bại.");
             var signedIn = new JavaScriptSerializer().ConvertToType<StaffAccount>(response.data);
             lock (sync)
