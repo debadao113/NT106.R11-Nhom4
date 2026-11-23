@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HotelNetworking;
 
-namespace CTQLyKhachSan.ALL_User_Control
+namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
 {
     public partial class UC_Employee : UserControl
     {
@@ -11,16 +11,18 @@ namespace CTQLyKhachSan.ALL_User_Control
         public UC_Employee()
         {
             InitializeComponent();
+            tabControl1.SelectedIndexChanged+=tabEmployee_SelectedIndexChanged;
+            guna2DataGridView2.Visible=false;
             txtPassword.PasswordChar='*'; labelToSET.Text="Tự động";
-            guna2DataGridView1.ReadOnly=guna2DataGridView2.ReadOnly=true;
-            guna2DataGridView1.AllowUserToAddRows=guna2DataGridView2.AllowUserToAddRows=false;
-            cloud=new CloudScreen(this,"EMPLOYEES_CHANGED",LoadEmployeesAsync,()=> { guna2DataGridView1.DataSource=null; guna2DataGridView2.DataSource=null; });
+            guna2DataGridView1.ReadOnly=guna2DataGridView3.ReadOnly=true;
+            guna2DataGridView1.AllowUserToAddRows=guna2DataGridView3.AllowUserToAddRows=false;
+            cloud=new CloudScreen(this,"EMPLOYEES_CHANGED",LoadEmployeesAsync,()=> { guna2DataGridView1.DataSource=null; guna2DataGridView3.DataSource=null; });
         }
         private async Task LoadEmployeesAsync()
         {
             var result=await HotelServices.GetEmployeesAsync();
             if(IsDisposed || HotelConnection.CurrentAccount==null) return;
-            guna2DataGridView1.DataSource=result; guna2DataGridView2.DataSource=result;
+            guna2DataGridView1.DataSource=result; guna2DataGridView3.DataSource=result;
         }
         private void label2_Click(object sender,EventArgs e) { }
         private void label10_Click(object sender,EventArgs e) { }

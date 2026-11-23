@@ -25,6 +25,7 @@ foreach ($project in @('', 'HotelServer')) {
     if ($project) { $config.configuration.connectionStrings.add.connectionString = $sql.ConnectionString }
     foreach ($setting in $config.configuration.appSettings.add) {
         if ($setting.key -eq 'HotelServerHost') { $setting.value = $ServerHost }
+        if (-not $project -and $setting.key -eq 'TransportSecurity') { $setting.value = 'None' }
         if ($setting.key -in @('HotelServerPort', 'ListenPort')) { $setting.value = [string]$Port }
     }
     $config.Save($destination)

@@ -102,7 +102,7 @@ pin chứng chỉ TLS, không cài SQL Server và không giữ mật khẩu Azur
 Xem phần **Chạy client với Azure SQL hoàn toàn trên cloud** trong [README](../README.md).
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\Setup-CloudClient.ps1 -CertificatePath 'C:\duong-dan\HotelServer-public.cer'
+powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\Setup-CloudClient.ps1
 powershell -NoProfile -File .\scripts\Build-Team.ps1 -Configuration Release
 ```
 

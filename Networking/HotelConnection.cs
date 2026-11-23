@@ -12,6 +12,7 @@ namespace HotelNetworking
         private static readonly object sync = new object();
         private static StaffAccount account;
         public static event Action Authenticated;
+        public static event Action AuthenticationLost;
         public static StaffAccount CurrentAccount
         {
             get { lock (sync) { return Client.IsConnected ? account : null; } }
@@ -20,6 +21,11 @@ namespace HotelNetworking
         static HotelConnection()
         {
             Client.Disconnected += delegate { lock (sync) { account = null; } };
+            Client.EventReceived += message => {
+                if(message.action!="AUTHENTICATION_REVOKED") return;
+                lock(sync) { account=null; }
+                AuthenticationLost?.Invoke();
+            };
         }
 
         public static async Task<StaffAccount> LoginAsync(string username, string password)

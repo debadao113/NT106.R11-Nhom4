@@ -12,21 +12,14 @@ namespace ChuuongTrinhQuanLyKhachSan
 {
     public partial class Dashbroad : Form
     {
-        private readonly CTQLyKhachSan.ALL_User_Control.UC_Employee employeePage;
-        private readonly CTQLyKhachSan.ALL_User_Control.UC_CustomerDetail customerDetailPage;
-
         public Dashbroad()
         {
             InitializeComponent();
-            employeePage = new CTQLyKhachSan.ALL_User_Control.UC_Employee { Name = "uC_Employee1", Visible = false };
-            customerDetailPage = new CTQLyKhachSan.ALL_User_Control.UC_CustomerDetail { Name = "uC_CustomerDetail1", Visible = false };
-            panel2.Controls.Add(employeePage);
-            panel2.Controls.Add(customerDetailPage);
-            btnEmployee.Click += delegate { ShowPage(employeePage); };
-            btnCustomerDetail.Click += delegate { ShowPage(customerDetailPage); };
             guna2Elipse1.Dispose();
             guna2Elipse2.Dispose();
             guna2Elipse3.Dispose();
+            guna2Elipse4.Dispose();
+            guna2Elipse5.Dispose();
             Region = null;
             SuspendLayout();
             UpdateAccountTitle();
@@ -87,6 +80,8 @@ namespace ChuuongTrinhQuanLyKhachSan
             uC_AddRoom1.Visible = false;
             uC_CustomerRes1.Visible = false;
             uC_CustomerCheckOut1.Visible = false;
+            uC_CustomerDetails1.Visible = false;
+            uC_Employee1.Visible = false;
             btnAddRoom.PerformClick();
         }
         private void btnAddRoom_Click(object sender, EventArgs e)
@@ -122,5 +117,17 @@ namespace ChuuongTrinhQuanLyKhachSan
             var account = HotelNetworking.HotelConnection.CurrentAccount;
             if (account != null) Text += " - " + account.username;
         }
+
+        private void btnCustomerDetail_Click(object sender, EventArgs e)
+        {
+            ShowPage(uC_CustomerDetails1);
+        }
+
+        private void btnEmployee_Click(object sender, EventArgs e)
+        {
+            ShowPage(uC_Employee1);
+        }
+
+
     }
 }

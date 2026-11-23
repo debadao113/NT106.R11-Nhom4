@@ -92,11 +92,50 @@ VALUES (@username, @displayName, @hash, @salt, @iterations)";
                         }
                 }
             }
+            if (account == null) return await AuthenticateEmployeeAsync(username.Trim(), password).ConfigureAwait(false);
             if (expected.Length != 32 || salt.Length != 16 || iterations < 10000 || iterations > 1000000) return null;
             var actual = await Task.Run(() => Hash(password, salt, iterations)).ConfigureAwait(false);
             int difference = expected.Length ^ actual.Length;
             for (int i = 0; i < actual.Length; i++) difference |= actual[i] ^ expected[i];
             return difference == 0 ? account : null;
+        }
+
+        private async Task<StaffAccount> AuthenticateEmployeeAsync(string username, string password)
+        {
+            StaffAccount account = null;
+            string encoded = "";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync().ConfigureAwait(false);
+                // A staff account, including a disabled one, owns its username. Never
+                // fall back to an employee password with the same username.
+                const string sql = @"SELECT eid,ename,pass FROM dbo.employee WHERE username=@username
+AND NOT EXISTS(SELECT 1 FROM dbo.staff_accounts WHERE username=@username)";
+                using (var command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
+                    using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
+                        if (await reader.ReadAsync().ConfigureAwait(false))
+                        {
+                            account = new StaffAccount { username=username, displayName=reader.GetString(1), accountType="employee", employeeId=reader.GetInt32(0) };
+                            encoded=reader.GetString(2);
+                        }
+                }
+            }
+            byte[] salt=new byte[16], expected=new byte[32];
+            int iterations=Iterations;
+            var parts=encoded.Split('$');
+            bool valid=false;
+            if(parts.Length==4 && parts[0]=="PBKDF2" && int.TryParse(parts[1],out iterations) && iterations>=10000 && iterations<=1000000)
+            {
+                try { salt=Convert.FromBase64String(parts[2]); expected=Convert.FromBase64String(parts[3]); valid=salt.Length==16 && expected.Length==32; }
+                catch(FormatException) { }
+            }
+            if(!valid) { iterations=Iterations; salt=new byte[16]; expected=new byte[32]; }
+            var actual=await Task.Run(()=>Hash(password,salt,iterations)).ConfigureAwait(false);
+            int difference=0;
+            for(int i=0;i<actual.Length;i++) difference|=actual[i]^expected[i];
+            return valid && difference==0 ? account : null;
         }
 
         private static byte[] Hash(string password, byte[] salt, int iterations)

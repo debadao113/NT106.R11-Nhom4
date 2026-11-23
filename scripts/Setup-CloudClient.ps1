@@ -1,10 +1,11 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory=$true)][string]$CertificatePath,
+    [string]$CertificatePath,
     [string]$ServerHost='20.198.74.207'
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
+if([string]::IsNullOrWhiteSpace($CertificatePath)) { $CertificatePath=Join-Path $root 'config/HotelServer-public.cer' }
 $destination=Join-Path $root 'App.local.config'
 $source=if(Test-Path -LiteralPath $destination) { $destination } else { Join-Path $root 'App.config' }
 [xml]$config=Get-Content -LiteralPath $source -Raw

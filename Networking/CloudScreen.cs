@@ -21,10 +21,12 @@ namespace HotelNetworking
             owner.Controls.Add(status); status.BringToFront();
             owner.VisibleChanged+=VisibleChanged;
             HotelConnection.Authenticated+=OnAuthenticated;
+            HotelConnection.AuthenticationLost+=OnDisconnected;
             HotelConnection.Client.EventReceived+=OnEvent;
             HotelConnection.Client.Disconnected+=OnDisconnected;
             owner.Disposed+=delegate {
                 HotelConnection.Authenticated-=OnAuthenticated;
+                HotelConnection.AuthenticationLost-=OnDisconnected;
                 HotelConnection.Client.EventReceived-=OnEvent;
                 HotelConnection.Client.Disconnected-=OnDisconnected;
             };

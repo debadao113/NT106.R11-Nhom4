@@ -166,6 +166,15 @@ OUTPUT INSERTED.cid VALUES(@name,@mobile,@nationality,@gender,@dob,@proof,@addre
                 return result;
             }
         }
+        public async Task<bool> EmployeeExistsAsync(int eid)
+        {
+            using(var connection=await OpenAsync().ConfigureAwait(false))
+            using(var command=new SqlCommand("SELECT COUNT(*) FROM dbo.employee WHERE eid=@id",connection))
+            {
+                command.Parameters.Add("@id",SqlDbType.Int).Value=eid;
+                return Convert.ToInt32(await command.ExecuteScalarAsync().ConfigureAwait(false))==1;
+            }
+        }
         public async Task<int> AddEmployeeAsync(EmployeeRegistration data)
         {
             var name=Required(data.ename,250,"Họ tên"); var gender=Required(data.gender,50,"Giới tính");

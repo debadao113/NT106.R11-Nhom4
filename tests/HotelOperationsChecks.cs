@@ -89,14 +89,33 @@ class HotelOperationsChecks
                 Console.WriteLine("PASS: Repeated checkout cannot release a newly occupied room.");
                 var employee=new EmployeeRegistration { ename="Test employee",mobile=123456,gender="Male",emailid="test@example.com",username="employee",password="123" };
                 int eid=await Ok<int>(first,"ADD_EMPLOYEE",employee);
+                using(var employeeClient=new NetworkClient(new TlsSettings { Enabled=false }))
+                {
+                    await employeeClient.ConnectAsync("127.0.0.1",port);
+                    Assert((await Send(employeeClient,"LOGIN",new { username="employee",password="wrong" })).error?.code=="INVALID_CREDENTIALS","Wrong employee password accepted");
+                    var signedIn=await Ok<StaffAccount>(employeeClient,"LOGIN",new { username="employee",password="123" });
+                    Assert(signedIn.accountType=="employee" && signedIn.employeeId==eid,"Employee login identity");
+                    await Ok<List<Room>>(employeeClient,"GET_ROOMS");
+                    Console.WriteLine("PASS: Employee authenticates through HotelServer and accesses shared rooms.");
                 Assert((await Send(second,"ADD_EMPLOYEE",employee)).error?.code=="EMPLOYEE_EXISTS","Duplicate employee accepted");
                 var employees=await Send(first,"GET_EMPLOYEES");
                 Assert(employees.success==true && serializer.ConvertToType<List<EmployeeRecord>>(employees.data).Count==1,"Employee list");
                 Assert(!serializer.Serialize(employees.data).Contains("password") && !serializer.Serialize(employees.data).Contains("PBKDF2"),"Hash leaked to client");
                 Assert(Convert.ToString(Sql(connection,"SELECT pass FROM dbo.employee WHERE eid="+eid)).StartsWith("PBKDF2$210000$"),"Password stored in plaintext");
                 await Ok<bool>(first,"DELETE_EMPLOYEE",new { eid });
+                    Assert((await Send(employeeClient,"GET_ROOMS")).error?.code=="AUTH_REQUIRED","Deleted employee session remained authenticated");
+                    Assert((await Send(employeeClient,"LOGIN",new { username="employee",password="123" })).error?.code=="INVALID_CREDENTIALS","Deleted employee can still login");
+                }
                 Assert((await Send(first,"DELETE_EMPLOYEE",new { eid })).error?.code=="NOT_FOUND","Missing employee delete accepted");
                 Console.WriteLine("PASS: Employee create/list/delete, uniqueness and server-side password hashing.");
+                var collision=new EmployeeRegistration { ename="Collision",mobile=12345,gender="Male",emailid="collision@example.com",username="test",password="employee-password" };
+                int collisionId=await Ok<int>(first,"ADD_EMPLOYEE",collision);
+                Assert((await Send(second,"LOGIN",new { username="test",password="employee-password" })).error?.code=="INVALID_CREDENTIALS","Employee password bypassed staff credentials");
+                await Ok<StaffAccount>(second,"LOGIN",new { username="test",password="test-password" });
+                await Ok<bool>(first,"DELETE_EMPLOYEE",new { eid=collisionId });
+                Sql(connection,"INSERT dbo.employee(ename,mobile,gender,emailid,username,pass) VALUES(N'Legacy',123,N'Male',N'legacy@example.com',N'legacy',N'plaintext')");
+                Assert((await Send(second,"LOGIN",new { username="legacy",password="plaintext" })).error?.code=="INVALID_CREDENTIALS","Legacy plaintext password accepted");
+                Console.WriteLine("PASS: Staff username priority and rejection of legacy plaintext credentials.");
             }
         }
         finally { await server.StopAsync(); }

@@ -5,8 +5,9 @@ NT106 .R11- Nhóm 4
 
 Xem [hướng dẫn đồng bộ môi trường nhóm](docs/TEAM_SETUP.md). Mở
 `ChuuongTrinhQuanLyKhachSan.sln` để dùng với Visual Studio 2022.
-Chạy `scripts/Setup-Team.ps1` để tạo cấu hình riêng cho máy và
-`scripts/Build-Team.ps1` để restore đúng phiên bản Guna rồi build cả hai ứng dụng.
+Để dùng database Azure chung, chạy `scripts/Setup-CloudClient.ps1`, sau đó
+`scripts/Build-Team.ps1 -Configuration Release` để restore đúng Guna và build.
+Máy thành viên chỉ chạy client; không khởi tạo database hoặc mở HotelServer riêng.
 Cấu hình local và tài khoản trong database không được đồng bộ qua Git.
 
 ## HotelServer
@@ -153,7 +154,8 @@ thông báo `ROOMS_CHANGED` yêu cầu kết nối đã đăng nhập. Thiếu �
 đăng nhập sai trên một kết nối, server đóng kết nối đó. Kết nối lại cần xác thực lại.
 
 Danh sách client trên server hiển thị tên tài khoản để phân biệt các phiên lễ tân.
-Mỗi máy cài mới cần tạo tài khoản qua cửa sổ server sau khi cấu hình database.
+Các máy dùng cloud đăng nhập bằng tài khoản đã được cấp trong database chung;
+không tạo lại tài khoản trên từng máy.
 Các chức năng tài khoản khách, Google, OTP và phân quyền admin thuộc các mốc sau.
 
 ### Tích hợp chi tiết khách hàng và nhân viên
@@ -165,9 +167,13 @@ Bảng `employee` được tạo tự động khi khởi tạo cơ sở dữ li�
 được băm PBKDF2-SHA256 và không xuất hiện trong danh sách; dữ liệu cũ không bị viết lại.
 
 Hai trang này gọi HotelServer và dùng database đã cấu hình ở server.
-Hồ sơ `employee` và tài khoản đăng nhập HotelServer trong `staff_accounts` hiện quản lý
-riêng. Thêm nhân viên tại dashboard chưa tạo tài khoản đăng nhập server; hãy dùng
-**Tài khoản lễ tân** trên HotelServer để cấp tài khoản truy cập.
+Nhân viên được tạo từ dashboard có thể đăng nhập qua HotelServer bằng thông tin
+trong `employee`; mật khẩu được kiểm tra bằng PBKDF2 tại server. `staff_accounts`
+vẫn là nguồn tài khoản lễ tân riêng và được ưu tiên khi trùng tên. Tài khoản lễ tân
+bị vô hiệu hóa không được đăng nhập bằng mật khẩu của employee trùng tên. Xóa nhân
+viên sẽ thu hồi phiên đăng nhập nhân viên đang mở. Mật khẩu plaintext từ phiên bản
+cũ không được chấp nhận; cần cấp lại hồ sơ/tài khoản theo quy trình của quản trị viên.
+Hai loại tài khoản hiện dùng cùng quyền nghiệp vụ; chưa có phân quyền admin/khách.
 
 Đã kiểm tra tích hợp trên cơ sở dữ liệu tạm: khởi tạo lặp lại, chuyển trang, ba bộ lọc
 khách, thêm nhân viên có dấu nháy trong tên, băm mật khẩu, xóa nhân viên, tải danh sách
@@ -180,10 +186,10 @@ Chỉ VM giữ thông tin đăng nhập SQL. Các máy thành viên không cần
 IP máy client cần được phép ở cả Azure NSG và Windows Firewall của VM cho TCP 8888;
 RDP 3389 chỉ dành cho quản trị viên. Khi đổi Wi-Fi, cập nhật rule cho IP mới.
 
-Sau khi lấy bản code có thay đổi này, lấy CER công khai từ quản trị viên và chạy:
+Sau khi lấy code mới, chạy (chứng chỉ công khai đã có trong `config/`):
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\Setup-CloudClient.ps1 -CertificatePath 'C:\duong-dan\HotelServer-public.cer'
+powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\Setup-CloudClient.ps1
 powershell -NoProfile -File .\scripts\Build-Team.ps1 -Configuration Release
 .\bin\Release\ChuuongTrinhQuanLyKhachSan.exe
 ```
@@ -219,3 +225,19 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\Test-HotelOp
 
 Kiểm thử nghiệp vụ tạo rồi xóa database tạm có tên ngẫu nhiên trên SQL Server localhost;
 không dùng hoặc sửa dữ liệu Azure. Chỉ máy chạy kiểm thử này mới cần SQL local.
+
+### Cập nhật mã từ các nhánh thành viên
+
+Đã tích hợp chuỗi nhánh `feature/customer-detail-backend`, `feature/employee-backend`
+và `feature/login-backend`. Giữ giao diện mới của thành viên, thay truy cập SQL trực
+tiếp bằng các dịch vụ HotelServer. Trang chi tiết khách dùng tên `UC_CustomerDetails`;
+loại bỏ trang `UC_CustomerDetail` cũ để không tạo hai màn hình trùng chức năng.
+
+Cấu hình client mặc định đã trỏ server Azure và pin chứng chỉ công khai. Máy đã có
+`App.local.config` từ trước cần chạy Setup-CloudClient một lần rồi build lại vì file
+local được ưu tiên hơn App.config. Chứng chỉ public hiện tại có hạn tới tháng 2/2027;
+khi đổi chứng chỉ, quản trị viên phải cập nhật public CER và pin cho cả nhóm.
+
+Sau bản tích hợp đăng nhập nhân viên, cập nhật exe HotelServer trên VM trước khi thử
+nhân viên mới. Giữ nguyên file cấu hình SQL/TLS đang có trên VM. Bộ kiểm thử dùng
+SQL tạm ở localhost; chưa thay thế kiểm tra giao diện thực tế của từng thành viên.

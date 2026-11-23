@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
@@ -217,6 +217,13 @@ namespace HotelServer
             if (request.type != "request" || string.IsNullOrWhiteSpace(request.requestId) || request.requestId.Length > 100
                 || string.IsNullOrWhiteSpace(request.action) || request.action.Length > 64)
                 return NetworkMessage.Failure(null, "INVALID_REQUEST", "Cần type=request, requestId tối đa 100 ký tự và action tối đa 64 ký tự.");
+            var signedIn=connection.Account;
+            if(signedIn?.employeeId!=null && request.action!="LOGIN" && request.action!="HELLO" && request.action!="PING"
+                && !await operations.EmployeeExistsAsync(signedIn.employeeId.Value).ConfigureAwait(false))
+            {
+                connection.Account=null; connection.Info.Username=null;
+                return AuthenticationRequired(request);
+            }
             switch (request.action)
             {
                 case "HELLO":
@@ -313,7 +320,15 @@ namespace HotelServer
                     result=await operations.AddEmployeeAsync(ReadData<EmployeeRegistration>(request)).ConfigureAwait(false);
                     await BroadcastAsync("EMPLOYEES_CHANGED").ConfigureAwait(false); break;
                 default:
-                    result=await operations.DeleteEmployeeAsync(IdField(request,"eid")).ConfigureAwait(false);
+                    int employeeId=IdField(request,"eid");
+                    result=await operations.DeleteEmployeeAsync(employeeId).ConfigureAwait(false);
+                    foreach(var client in clients.Values)
+                    {
+                        var previous=client.Account;
+                        if(previous?.employeeId!=employeeId || System.Threading.Interlocked.CompareExchange(ref client.Account,null,previous)!=previous) continue;
+                        client.Info.Username=null;
+                        await SendEventAsync(client,new NetworkMessage { type="event",action="AUTHENTICATION_REVOKED" }).ConfigureAwait(false);
+                    }
                     await BroadcastAsync("EMPLOYEES_CHANGED").ConfigureAwait(false); break;
             }
             return NetworkMessage.Response(request,result);

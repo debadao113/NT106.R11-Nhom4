@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HotelNetworking;
 
-namespace CTQLyKhachSan.ALL_User_Control
+namespace ChuuongTrinhQuanLyKhachSan.All_User_Control
 {
-    public partial class UC_CustomerDetail : UserControl
+    public partial class UC_CustomerDetails : UserControl
     {
         private readonly CloudScreen cloud;
         private int version;
-        public UC_CustomerDetail()
+        public UC_CustomerDetails()
         {
             InitializeComponent();
             guna2DataGridView1.ReadOnly=true; guna2DataGridView1.AllowUserToAddRows=false;
@@ -23,7 +23,7 @@ namespace CTQLyKhachSan.ALL_User_Control
             var result=await HotelServices.GetCustomersAsync(status);
             if(!IsDisposed && selected==version && HotelConnection.CurrentAccount!=null) guna2DataGridView1.DataSource=result;
         }
-        private async void UC_CustomerDetail_Load(object sender,EventArgs e) { await cloud.RefreshAsync(); }
+        private async void UC_CustomerDetails_Load(object sender,EventArgs e) { await cloud.RefreshAsync(); }
         private async void txtSearchBy_SelectedIndexChanged(object sender,EventArgs e) { ++version; if(cloud!=null) await cloud.RefreshAsync(); }
     }
 }
