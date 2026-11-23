@@ -66,5 +66,7 @@ namespace ChuuongTrinhQuanLyKhachSan
             uC_Employee1.Visible = true;
             uC_Employee1.BringToFront();
         }
+
+
     }
 }

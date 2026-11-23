@@ -16,10 +16,6 @@ namespace ChuuongTrinhQuanLyKhachSan
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            // Tu dong khoi tao Database va cac bang neu chua ton tai
-            function.InitializeDatabase();
-
             Application.Run(new Form1());
         }
     }
