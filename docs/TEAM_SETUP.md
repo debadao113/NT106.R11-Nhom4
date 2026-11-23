@@ -106,9 +106,9 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\Setup-CloudC
 powershell -NoProfile -File .\scripts\Build-Team.ps1 -Configuration Release
 ```
 
-Không chạy Initialize-TeamDatabase trên máy chỉ dùng cloud. Quản trị viên cần cho
-phép IP Internet của từng máy trong NSG và Windows Firewall cổng 8888. Các tài khoản
-lễ tân nằm trong database dùng chung; không tạo lại tài khoản trên từng máy.
+Không chạy Initialize-TeamDatabase trên máy chỉ dùng cloud. Cổng TCP 8888 đã mở
+cho mọi IP ở cả NSG và Windows Firewall, không cần duyệt IP từng thành viên.
+Các tài khoản lễ tân nằm trong database dùng chung; không tạo lại trên từng máy.
 
 ## 6. Bảng xử lý lỗi thường gặp
 

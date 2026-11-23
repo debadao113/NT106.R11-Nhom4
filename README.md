@@ -132,8 +132,9 @@ Không commit file cấu hình thực tế có mật khẩu.
    là SHA-256 của đúng chứng chỉ. Không có cơ chế tự hạ xuống TCP khi TLS lỗi.
    Client xác minh pin, tên và thời hạn chứng chỉ; chứng chỉ tự ký được tin cậy
    qua pin được phân phối riêng, không cần thêm vào Trusted Root của Windows.
-5. Sau đó thêm rule Azure NSG và Windows Firewall cho TCP 8888. Giai đoạn kiểm tra
-   chỉ cho IP công cộng của máy thử nghiệm; cổng RDP 3389 giữ rule My IP riêng.
+5. Azure NSG và Windows Firewall hiện cho phép **TCP 8888 từ mọi IP** để các máy
+   thành viên kết nối từ bất kỳ mạng nào. Rule ứng dụng dùng Source/RemoteAddress Any.
+   Cổng RDP 3389 giữ rule My IP riêng; Azure SQL chỉ cần cho phép IP của VM.
 6. Chạy `HotelServerProbe.exe` để kiểm tra TLS, PING, LOGIN và GET_ROOMS. Công cụ này
    và ứng dụng WinForms đầy đủ đều không cần SQL local. Xem hướng dẫn cloud phía dưới.
 
@@ -183,8 +184,9 @@ và thu nhỏ cửa sổ. Kiểm tra đăng nhập nhiều client và đồng b�
 
 Luồng: **WinForms → TLS/TCP 8888 → HotelServer trên Azure VM → Azure SQL**.
 Chỉ VM giữ thông tin đăng nhập SQL. Các máy thành viên không cần SQL Server/SSMS.
-IP máy client cần được phép ở cả Azure NSG và Windows Firewall của VM cho TCP 8888;
-RDP 3389 chỉ dành cho quản trị viên. Khi đổi Wi-Fi, cập nhật rule cho IP mới.
+Cổng ứng dụng TCP 8888 đã được mở cho mọi IP trên Azure NSG và Windows Firewall.
+Thành viên không cần cấp IP thủ công và có thể đổi Wi-Fi. RDP 3389 vẫn giới hạn
+riêng cho quản trị viên; client không kết nối trực tiếp Azure SQL.
 
 Sau khi lấy code mới, chạy (chứng chỉ công khai đã có trong `config/`):
 
@@ -241,3 +243,11 @@ khi đổi chứng chỉ, quản trị viên phải cập nhật public CER và 
 Sau bản tích hợp đăng nhập nhân viên, cập nhật exe HotelServer trên VM trước khi thử
 nhân viên mới. Giữ nguyên file cấu hình SQL/TLS đang có trên VM. Bộ kiểm thử dùng
 SQL tạm ở localhost; chưa thay thế kiểm tra giao diện thực tế của từng thành viên.
+
+### Trạng thái kết nối công khai
+
+Đã kiểm tra Azure NSG cho TCP 8888 với Source `*`, Windows Firewall cho đúng
+`C:\HotelServer\HotelServer.exe` với RemoteAddress `Any` và Profile `Any`.
+Ứng dụng vẫn yêu cầu TLS 1.2, pin chứng chỉ và đăng nhập. Cấu hình này không mở mọi cổng.
+Nếu Azure SQL serverless vừa tự tạm dừng, lần đăng nhập đầu có thể gặp lỗi khi database
+đang khởi động lại; chờ database sẵn sàng rồi đăng nhập lại. Không cần đổi firewall.
