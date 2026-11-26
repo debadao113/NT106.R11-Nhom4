@@ -39,11 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
@@ -52,107 +48,78 @@
     <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="All User Control\UC_AddRoom.cs">
+    <Compile Include="Views\Controls\RoomsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="All User Control\UC_AddRoom.Designer.cs">
-      <DependentUpon>UC_AddRoom.cs</DependentUpon>
+    <Compile Include="Views\Controls\RoomsControl.Designer.cs">
+      <DependentUpon>RoomsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="All User Control\UC_CustomerCheckOut.cs">
+    <Compile Include="Views\Controls\CheckOutControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="All User Control\UC_CustomerCheckOut.Designer.cs">
-      <DependentUpon>UC_CustomerCheckOut.cs</DependentUpon>
+    <Compile Include="Views\Controls\CheckOutControl.Designer.cs">
+      <DependentUpon>CheckOutControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="All User Control\UC_CustomerDetails.cs">
+    <Compile Include="Views\Controls\CustomersControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="All User Control\UC_CustomerDetails.Designer.cs">
-      <DependentUpon>UC_CustomerDetails.cs</DependentUpon>
+    <Compile Include="Views\Controls\CustomersControl.Designer.cs">
+      <DependentUpon>CustomersControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="All User Control\UC_CustomerRes.cs">
+    <Compile Include="Views\Controls\CheckInControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="All User Control\UC_CustomerRes.Designer.cs">
-      <DependentUpon>UC_CustomerRes.cs</DependentUpon>
+    <Compile Include="Views\Controls\CheckInControl.Designer.cs">
+      <DependentUpon>CheckInControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="All User Control\UC_Employee.cs">
+    <Compile Include="Views\Controls\EmployeesControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="All User Control\UC_Employee.Designer.cs">
-      <DependentUpon>UC_Employee.cs</DependentUpon>
+    <Compile Include="Views\Controls\EmployeesControl.Designer.cs">
+      <DependentUpon>EmployeesControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dashbroad.cs">
+    <Compile Include="Views\DashboardForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dashbroad.Designer.cs">
-      <DependentUpon>Dashbroad.cs</DependentUpon>
+    <Compile Include="Views\DashboardForm.Designer.cs">
+      <DependentUpon>DashboardForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="Views\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Views\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Networking\JsonConnection.cs" />
-    <Compile Include="Networking\NetworkClient.cs" />
-    <Compile Include="Networking\TlsTransport.cs" />
-    <Compile Include="Networking\HotelConnection.cs" />
-    <Compile Include="Networking\Room.cs" />
-    <Compile Include="Networking\StaffAccount.cs" />
-    <Compile Include="Networking\RoomService.cs" />
-    <Compile Include="Networking\HotelRecords.cs" />
-    <Compile Include="Networking\HotelServices.cs" />
-    <Compile Include="Networking\CloudScreen.cs" />
-    <Compile Include="ServerConnectionForm.cs">
+    <Compile Include="Views\SessionForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UI\UiTheme.cs" />
+    <Compile Include="UI\OverviewPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\Room.cs" />
+    <Compile Include="Models\StaffAccount.cs" />
+    <Compile Include="Models\AdminRegistration.cs" />
+    <Compile Include="Infrastructure\SupabaseClient.cs" />
+    <Compile Include="Infrastructure\SupabaseSettings.cs" />
+    <Compile Include="Services\HotelServices.cs" />
+    <Compile Include="Services\HotelSession.cs" />
+    <Compile Include="Services\LoginIdentity.cs" />
+    <Compile Include="Services\RoomService.cs" />
+    <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Views\AdminAccountsForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Include="UI\CloudScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="All User Control\UC_AddRoom.resx">
-      <DependentUpon>UC_AddRoom.cs</DependentUpon>
+    <EmbeddedResource Include="Views\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="All User Control\UC_CustomerCheckOut.resx">
-      <DependentUpon>UC_CustomerCheckOut.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="All User Control\UC_CustomerDetails.resx">
-      <DependentUpon>UC_CustomerDetails.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="All User Control\UC_CustomerRes.resx">
-      <DependentUpon>UC_CustomerRes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="All User Control\UC_Employee.resx">
-      <DependentUpon>UC_Employee.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Dashbroad.resx">
-      <DependentUpon>Dashbroad.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Database.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
