@@ -18,6 +18,13 @@ packages/
 
 # Machine-specific connection strings (may contain credentials)
 App.local.config
-HotelServer/App.local.config
 *.pfx
 *.p12
+
+# Personal data exports and Supabase CLI state
+supabase/.temp/
+*.local.sql
+*.local.json
+
+# Local extracted copy of the project
+/NT106.R11-Nhom4/
